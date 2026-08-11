@@ -1,0 +1,6 @@
+@AnkiWebParser_HostAddress = http://localhost:5261
+
+GET {{AnkiWebParser_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
