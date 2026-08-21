@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AnkiWebParser")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a6e52150b1733e0e8e1cb325e4472fed0db633e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+62ed78663a7e37b6183ae104ce5416bdf0824512")]
 [assembly: System.Reflection.AssemblyProductAttribute("AnkiWebParser")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AnkiWebParser")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
