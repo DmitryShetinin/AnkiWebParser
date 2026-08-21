@@ -44,6 +44,7 @@ class MerriamParser : IDictionaryParser
     {
         return new PartOfSpeechEntry
         {
+            ExternalId = entry.Meta.Uuid,
             PartOfSpeech = entry.Fl,
             Meanings = ParseMeanings(entry.Def)
         };

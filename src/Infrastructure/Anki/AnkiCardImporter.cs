@@ -1,20 +1,21 @@
-
 using AnkiIntegration.AnkiConnect;
 using Core.Models;
-
-namespace Infrastructure.Anki;
+using Microsoft.Extensions.Options;
 
 public sealed class AnkiCardImporter : IAnkiCardImporter
 {
     private readonly IAnkiConnectClient _ankiClient;
     private readonly AnkiCardMapper _mapper;
+    private readonly AnkiOptions _options;
 
     public AnkiCardImporter(
         IAnkiConnectClient ankiClient,
-        AnkiCardMapper mapper)
+        AnkiCardMapper mapper,
+        IOptions<AnkiOptions> options)
     {
         _ankiClient = ankiClient;
         _mapper = mapper;
+        _options = options.Value;
     }
 
     public async Task<AnkiImportResult> ImportAsync(
@@ -29,8 +30,11 @@ public sealed class AnkiCardImporter : IAnkiCardImporter
         try
         {
             var notes = cards
-            .Select(card => _mapper.Map(card, deckName, modelName))
-            .ToList();
+                .Select(card => _mapper.Map(
+                    card,
+                    _options.DeckName,
+                    _options.ModelName))
+                .ToList();
 
             var response = await _ankiClient.AddNotesAsync(
                 notes,

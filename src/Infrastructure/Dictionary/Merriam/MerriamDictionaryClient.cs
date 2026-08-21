@@ -2,17 +2,18 @@
 
 
 
+using Application.Dictionary.Merriam;
 using Application.Merriam;
-using Application.Merriam.Response;
-using Infrastructure.Dictionary.Merriam;
+ 
+
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 
 
 
-public sealed class DictionaryClient(
+public sealed class MerriamDictionaryClient(
     HttpClient httpClient,
-    IOptions<DictionaryOptions> options) : IDictionaryClient
+    IOptions<DictionaryOptions> options) : IMerriamDictionaryClient
 {
     private readonly HttpClient _httpClient = httpClient;
     private readonly DictionaryOptions _options = options.Value;
