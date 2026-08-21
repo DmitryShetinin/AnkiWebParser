@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace Application.Merriam;
 
 public sealed class MerriamEntryDto
@@ -40,4 +41,22 @@ public sealed class MerriamHeadwordDto
 public sealed class MerriamDefinitionBlockDto
 {
     public JsonElement Sseq { get; init; }
+}
+
+public sealed class MerriamSenseDto
+{
+    [JsonPropertyName("sn")]
+    public string? SenseNumber { get; init; }
+
+    [JsonPropertyName("dt")]
+    public JsonElement Dt { get; init; }
+}
+
+public sealed class MerriamDefinitionDto
+{
+    [JsonPropertyName("sseq")]
+    public JsonElement Sseq { get; init; }
+
+    [JsonPropertyName("shortdef")]
+    public IReadOnlyList<string> ShortDefinitions { get; init; } = [];
 }

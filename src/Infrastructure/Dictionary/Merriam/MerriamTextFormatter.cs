@@ -5,7 +5,7 @@
 
 using Application.Abstractions;
 
-class MerriamTextParser : IMerriamTextFormatter
+class MerriamTextFormatter : IMerriamTextFormatter
 {
     
   
