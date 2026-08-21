@@ -1,6 +1,6 @@
 
 
-using Application.Merriam.Response;
+using Application.Merriam;
 using Core.Models;
 
 namespace Application.Abstractions; 

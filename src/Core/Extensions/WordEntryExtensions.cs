@@ -17,6 +17,8 @@ public static class WordEntryExtensions
             {
                 cards.Add(new Card
                 {
+
+                    ExternalId = entry.ExternalId,
                     Word = wordEntry.Word,
                     PartOfSpeech = entry.PartOfSpeech,
                     Definition = meaning.Definition,

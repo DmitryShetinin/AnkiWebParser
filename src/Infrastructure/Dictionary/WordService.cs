@@ -1,12 +1,15 @@
 using Application.Abstractions;
 using Core.Models;
-using Infrastructure.Dictionary.Merriam;
-using  Core.Extensions; 
+ 
+using  Core.Extensions;
+using AnkiIntegration.AnkiConnect;
+using Application.Dictionary.Merriam;
 
 
 public sealed class WordService(
     IDictionaryClient dictionaryClient,
-    IDictionaryParser dictionaryParser) : IWordService
+    IDictionaryParser dictionaryParser,
+    IAnkiConnectClient ankiConnectClient) : IWordService
 {
     public async Task<IReadOnlyList<Card>> GetCardsAsync(
         string word,
@@ -20,6 +23,8 @@ public sealed class WordService(
         var wordEntry =
             dictionaryParser.Parse(response);
 
+
+       
         return wordEntry.ToCards();
     }
 }
