@@ -1,7 +1,8 @@
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
- 
+
 
 namespace AnkiIntegration.AnkiConnect;
 
@@ -9,7 +10,9 @@ public sealed class AnkiConnectClient : IAnkiConnectClient
 {
     private readonly HttpClient _httpClient;
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
+
+
+    private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
@@ -37,6 +40,9 @@ public sealed class AnkiConnectClient : IAnkiConnectClient
         return SendRequestAsync<List<long?>>(request, cancellationToken);
     }
 
+
+
+
     public Task<AnkiResponse<List<long>>> FindNotesAsync(
         string query,
         CancellationToken cancellationToken = default)
@@ -54,25 +60,35 @@ public sealed class AnkiConnectClient : IAnkiConnectClient
         return SendRequestAsync<List<long>>(request, cancellationToken);
     }
 
-    private async Task<AnkiResponse<T>> SendRequestAsync<T>(
-        object requestData,
-        CancellationToken cancellationToken)
+    public async Task<AnkiResponse<T>> SendRequestAsync<T>(
+    object requestData,
+    CancellationToken cancellationToken = default)
     {
-        using var response = await _httpClient.PostAsJsonAsync(
-            string.Empty,
+        var json = JsonSerializer.Serialize(
             requestData,
-            JsonOptions,
+            _jsonOptions);
+
+        using var content = new StringContent(
+            json,
+            Encoding.UTF8,
+            "application/json");
+
+        using var response = await _httpClient.PostAsync(
+            "",
+            content,
+            cancellationToken);
+
+        var responseJson = await response.Content.ReadAsStringAsync(
             cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
-        var result =
-            await response.Content.ReadFromJsonAsync<AnkiResponse<T>>(
-                JsonOptions,
-                cancellationToken);
+        var result = JsonSerializer.Deserialize<AnkiResponse<T>>(
+            responseJson,
+            _jsonOptions);
 
         return result
             ?? throw new InvalidOperationException(
-                "Failed to deserialize AnkiConnect response.");
+                $"Failed to deserialize Anki response: {responseJson}");
     }
 }

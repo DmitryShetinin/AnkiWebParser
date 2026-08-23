@@ -15,13 +15,14 @@ public sealed class AnkiCardMapper
             ModelName = modelName,
             Fields = new Dictionary<string, string>
             {
+                [DictionaryIdField] = card.ExternalId.ToString(),
                 ["Word"] = card.Word,
                 ["PartOfSpeech"] = card.PartOfSpeech,
                 ["Meaning"] = card.Definition,
                 ["Examples"] = string.Join("<br>", card.Examples),
                 ["Synonyms"] = string.Join(", ", card.Synonyms),
-                ["RelatedWords"] = string.Join(", ", card.RelatedWords),
-                [DictionaryIdField] = card.ExternalId.ToString()
+                ["Antonyms"] = string.Join(", ", card.Antonyms),
+                ["RelatedWords"] = string.Join(", ", card.RelatedWords)
             }
         };
     }

@@ -10,6 +10,9 @@ public sealed class AnkiResponse<T>
 
     [JsonPropertyName("error")]
     public string? Error { get; init; }
+
+
+    public bool Success => Error is null;
 }
 
 
@@ -28,5 +31,7 @@ public sealed class AnkiNoteDto
     [JsonPropertyName("tags")]
     public IReadOnlyList<string> Tags { get; init; } = [];
 
-    
+   
 }
+
+

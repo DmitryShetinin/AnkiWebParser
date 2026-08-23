@@ -15,6 +15,9 @@ public static class DictionaryExtensions
             .AddOptions<DictionaryOptions>()
             .Bind(configuration.GetSection("Dictionary"));
 
+
+
+        services.AddMemoryCache();
         services.AddHttpClient<
             IMerriamDictionaryClient,
             MerriamDictionaryClient>();

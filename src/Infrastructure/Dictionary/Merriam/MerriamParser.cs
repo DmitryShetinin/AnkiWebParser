@@ -1,18 +1,12 @@
-
-using Application.Merriam.Response;
-
 using Application.Abstractions;
-using Core.Models;
 using Application.Merriam;
+using Application.Merriam.Response;
+using Core.Models;
 using System.Text.Json;
 
-
-class MerriamParser : IDictionaryParser
+public sealed class MerriamParser : IDictionaryParser
 {
-
-
     private readonly IMerriamTextFormatter _textFormatter;
-
 
     public MerriamParser(IMerriamTextFormatter textFormatter)
     {
@@ -40,18 +34,35 @@ class MerriamParser : IDictionaryParser
         };
     }
 
+    public static string CreateExternalId(
+        string merriamUuid,
+        string? senseNumber)
+    {
+        return string.IsNullOrWhiteSpace(senseNumber)
+            ? merriamUuid
+            : $"{merriamUuid}:{senseNumber}";
+    }
+
     private PartOfSpeechEntry ParseEntry(MerriamEntryDto entry)
     {
         return new PartOfSpeechEntry
         {
+            // UUID всей Merriam entry.
             ExternalId = entry.Meta.Uuid,
+
             PartOfSpeech = entry.Fl,
-            Meanings = ParseMeanings(entry.Def)
+
+            // Передаём UUID entry дальше,
+            // чтобы каждый Meaning получил свой ExternalId.
+            Meanings = ParseMeanings(
+                entry.Def,
+                entry.Meta.Uuid.ToString())
         };
     }
 
     private IReadOnlyList<Meaning> ParseMeanings(
-    IReadOnlyList<MerriamDefinitionBlockDto> definitions)
+        IReadOnlyList<MerriamDefinitionBlockDto> definitions,
+        string merriamUuid)
     {
         var meanings = new List<Meaning>();
 
@@ -59,7 +70,10 @@ class MerriamParser : IDictionaryParser
         {
             foreach (var sense in ExtractSenses(definition.Sseq))
             {
-                meanings.Add(ParseMeaning(sense));
+                meanings.Add(
+                    ParseMeaning(
+                        sense,
+                        merriamUuid));
             }
         }
 
@@ -82,7 +96,6 @@ class MerriamParser : IDictionaryParser
         if (element.ValueKind != JsonValueKind.Array)
             return;
 
-        // Ищем конструкции вида:
         // ["sense", { ... }]
         if (element.GetArrayLength() == 2 &&
             element[0].ValueKind == JsonValueKind.String &&
@@ -103,12 +116,15 @@ class MerriamParser : IDictionaryParser
         }
     }
 
-
-    private Meaning ParseMeaning(MerriamSenseDto sense)
+    private Meaning ParseMeaning(
+        MerriamSenseDto sense,
+        string merriamUuid)
     {
         string? definition = null;
+
         var examples = new List<string>();
         var synonyms = new List<string>();
+        var antonyms = new List<string>();
         var relatedWords = new List<string>();
 
         foreach (var item in sense.Dt.EnumerateArray())
@@ -128,35 +144,70 @@ class MerriamParser : IDictionaryParser
                     break;
 
                 case "vis":
-                    examples.AddRange(ParseExamples(item[1]));
-                    break;
-
-                case "syn_list":
-                    synonyms.AddRange(ParseSynonyms(item[1]));
-                    break;
-
-                case "rel_list":
-                    relatedWords.AddRange(ParseRelatedWords(item[1]));
+                    examples.AddRange(
+                        ParseExamples(item[1]));
                     break;
             }
         }
 
+        synonyms.AddRange(
+            ParseWords(sense.SynList));
+
+        antonyms.AddRange(
+            ParseWords(sense.AntList));
+
+        relatedWords.AddRange(
+            ParseWords(sense.RelList));
+
         return new Meaning
         {
+            Id = Guid.NewGuid(),
+
+            ExternalId = CreateExternalId(
+          merriamUuid,
+          sense.SenseNumber),
+
             Definition = definition ?? string.Empty,
             Examples = examples,
             Synonyms = synonyms,
+            Antonyms = antonyms,
             RelatedWords = relatedWords
         };
     }
+
+    private IEnumerable<string> ParseWords(JsonElement value)
+    {
+        if (value.ValueKind != JsonValueKind.Array)
+            yield break;
+
+        foreach (var group in value.EnumerateArray())
+        {
+            if (group.ValueKind != JsonValueKind.Array)
+                continue;
+
+            foreach (var item in group.EnumerateArray())
+            {
+                if (!item.TryGetProperty(
+                        "wd",
+                        out var word))
+                {
+                    continue;
+                }
+
+                var text = word.GetString();
+
+                if (!string.IsNullOrWhiteSpace(text))
+                    yield return text;
+            }
+        }
+    }
+
     private string ParseText(JsonElement value)
     {
         var text = value.GetString() ?? string.Empty;
 
         return _textFormatter.Format(text);
     }
-
-
 
     private IEnumerable<string> ParseExamples(JsonElement value)
     {
@@ -168,8 +219,12 @@ class MerriamParser : IDictionaryParser
             if (example.ValueKind != JsonValueKind.Object)
                 continue;
 
-            if (!example.TryGetProperty("t", out var text))
+            if (!example.TryGetProperty(
+                    "t",
+                    out var text))
+            {
                 continue;
+            }
 
             var exampleText = text.GetString();
 
@@ -177,57 +232,4 @@ class MerriamParser : IDictionaryParser
                 yield return exampleText;
         }
     }
-
-
-    private IEnumerable<string> ParseSynonyms(JsonElement value)
-    {
-        if (value.ValueKind != JsonValueKind.Array)
-            yield break;
-
-        foreach (var group in value.EnumerateArray())
-        {
-            if (group.ValueKind != JsonValueKind.Array)
-                continue;
-
-            foreach (var item in group.EnumerateArray())
-            {
-                if (!item.TryGetProperty("wd", out var word))
-                    continue;
-
-                var valueText = word.GetString();
-
-                if (!string.IsNullOrWhiteSpace(valueText))
-                    yield return valueText;
-            }
-        }
-    }
-
-
-    private IEnumerable<string> ParseRelatedWords(JsonElement value)
-    {
-        if (value.ValueKind != JsonValueKind.Array)
-            yield break;
-
-        foreach (var group in value.EnumerateArray())
-        {
-            if (group.ValueKind != JsonValueKind.Array)
-                continue;
-
-            foreach (var item in group.EnumerateArray())
-            {
-                if (!item.TryGetProperty("wd", out var word))
-                    continue;
-
-                var valueText = word.GetString();
-
-                if (!string.IsNullOrWhiteSpace(valueText))
-                    yield return valueText;
-            }
-        }
-    }
-
-
-
-
-
 }

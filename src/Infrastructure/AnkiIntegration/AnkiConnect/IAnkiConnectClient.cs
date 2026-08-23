@@ -11,4 +11,8 @@ public interface IAnkiConnectClient
     Task<AnkiResponse<List<long>>> FindNotesAsync(
         string query,
         CancellationToken cancellationToken = default);
+
+    Task<AnkiResponse<T>> SendRequestAsync<T>(
+        object request,
+        CancellationToken cancellationToken = default);
 }
