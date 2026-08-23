@@ -22,7 +22,8 @@ public static class AnkiExtensions
 
         services.AddScoped<IAnkiCardImporter, AnkiCardImporter>();
         services.AddScoped<AnkiCardMapper>();
-
+        services.AddScoped<AnkiOptions>();
+        services.AddSingleton<IAnkiModelInitializer, AnkiModelInitializer>();
         return services;
     }
 }

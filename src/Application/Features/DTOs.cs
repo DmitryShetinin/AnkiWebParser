@@ -50,8 +50,19 @@ public sealed class MerriamSenseDto
 
     [JsonPropertyName("dt")]
     public JsonElement Dt { get; init; }
-}
 
+    [JsonPropertyName("syn_list")]
+    public JsonElement SynList { get; init; }
+
+    [JsonPropertyName("ant_list")]
+    public JsonElement AntList { get; init; }
+
+    [JsonPropertyName("rel_list")]
+    public JsonElement RelList { get; init; }
+
+    [JsonPropertyName("near_list")]
+    public JsonElement NearList { get; init; }
+}
 public sealed class MerriamDefinitionDto
 {
     [JsonPropertyName("sseq")]

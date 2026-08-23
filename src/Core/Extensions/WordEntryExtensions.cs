@@ -18,12 +18,13 @@ public static class WordEntryExtensions
                 cards.Add(new Card
                 {
 
-                    ExternalId = entry.ExternalId,
+                    ExternalId = meaning.ExternalId,
                     Word = wordEntry.Word,
                     PartOfSpeech = entry.PartOfSpeech,
                     Definition = meaning.Definition,
                     Examples = meaning.Examples,
                     Synonyms = meaning.Synonyms,
+                    Antonyms = meaning.Antonyms,
                     RelatedWords = meaning.RelatedWords
                 });
             }

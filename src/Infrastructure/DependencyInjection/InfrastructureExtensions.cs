@@ -11,7 +11,8 @@ public static class DependencyInjection
       IConfiguration configuration)
   {
     services.AddDictionary(configuration)
-            .AddAnki(configuration);
+            .AddAnki(configuration)
+            .AddPersistence(configuration);
 
 
 
