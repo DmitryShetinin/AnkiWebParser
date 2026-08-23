@@ -1,6 +1,7 @@
 
 
 using Application.Dictionary.Merriam;
+using Application.Features.SettingsUser.GetProfile;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +16,8 @@ public static class ApplicationExtensions
     {
  
         
-      
+        services.AddScoped<GetProfileHandler>();
+        services.AddScoped<UpdateProfileHandler>();
 
    
 

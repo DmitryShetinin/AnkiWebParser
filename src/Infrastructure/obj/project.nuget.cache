@@ -1,9 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "SXJznelBBxw=",
+  "dgSpecHash": "uccvn0Gxnzk=",
   "success": true,
   "projectFilePath": "/home/hatelove/Desktop/projects/AnkiWebParser/src/Infrastructure/Infrastructure.csproj",
   "expectedPackageFiles": [
+    "/home/hatelove/.nuget/packages/microsoft.entityframeworkcore/10.0.11/microsoft.entityframeworkcore.10.0.11.nupkg.sha512",
+    "/home/hatelove/.nuget/packages/microsoft.entityframeworkcore.abstractions/10.0.11/microsoft.entityframeworkcore.abstractions.10.0.11.nupkg.sha512",
+    "/home/hatelove/.nuget/packages/microsoft.entityframeworkcore.analyzers/10.0.11/microsoft.entityframeworkcore.analyzers.10.0.11.nupkg.sha512",
+    "/home/hatelove/.nuget/packages/microsoft.entityframeworkcore.relational/10.0.0/microsoft.entityframeworkcore.relational.10.0.0.nupkg.sha512",
     "/home/hatelove/.nuget/packages/microsoft.extensions.caching.abstractions/10.0.11/microsoft.extensions.caching.abstractions.10.0.11.nupkg.sha512",
     "/home/hatelove/.nuget/packages/microsoft.extensions.caching.memory/10.0.11/microsoft.extensions.caching.memory.10.0.11.nupkg.sha512",
     "/home/hatelove/.nuget/packages/microsoft.extensions.configuration/10.0.11/microsoft.extensions.configuration.10.0.11.nupkg.sha512",
@@ -34,6 +38,8 @@
     "/home/hatelove/.nuget/packages/microsoft.extensions.options/10.0.11/microsoft.extensions.options.10.0.11.nupkg.sha512",
     "/home/hatelove/.nuget/packages/microsoft.extensions.options.configurationextensions/10.0.11/microsoft.extensions.options.configurationextensions.10.0.11.nupkg.sha512",
     "/home/hatelove/.nuget/packages/microsoft.extensions.primitives/10.0.11/microsoft.extensions.primitives.10.0.11.nupkg.sha512",
+    "/home/hatelove/.nuget/packages/npgsql/10.0.0/npgsql.10.0.0.nupkg.sha512",
+    "/home/hatelove/.nuget/packages/npgsql.entityframeworkcore.postgresql/10.0.0/npgsql.entityframeworkcore.postgresql.10.0.0.nupkg.sha512",
     "/home/hatelove/.nuget/packages/system.diagnostics.eventlog/10.0.11/system.diagnostics.eventlog.10.0.11.nupkg.sha512"
   ],
   "logs": []
