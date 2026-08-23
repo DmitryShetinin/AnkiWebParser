@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AnkiIntegration.AnkiConnect;
 using Microsoft.Extensions.Options;
 
@@ -9,7 +8,7 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
 
     public AnkiModelInitializer(
         IAnkiConnectClient ankiClient,
-         IOptions<AnkiOptions> options)
+        IOptions<AnkiOptions> options)
     {
         _ankiClient = ankiClient;
         _options = options.Value;
@@ -35,8 +34,10 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
                 cancellationToken);
 
         if (!response.Success)
+        {
             throw new InvalidOperationException(
                 response.Error ?? "Failed to get Anki decks.");
+        }
 
         if (response.Result?.Contains(_options.DeckName) == true)
             return;
@@ -74,8 +75,10 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
                 cancellationToken);
 
         if (!response.Success)
+        {
             throw new InvalidOperationException(
                 response.Error ?? "Failed to get Anki models.");
+        }
 
         if (response.Result?.Contains(_options.ModelName) == true)
             return;
@@ -91,8 +94,6 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
                     {
                         modelName = _options.ModelName,
 
-                        // ВАЖНО:
-                        // первое поле становится Sort Field.
                         inOrderFields = new[]
                         {
                             "DictionaryId",
@@ -141,6 +142,25 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
             padding: 20px;
         }
 
+        .word-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .word-list br {
+            display: none;
+        }
+
+        .word-list {
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .word-item {
+            display: inline-block;
+        }
+
         .word-header {
             font-size: 28px;
             font-weight: bold;
@@ -162,10 +182,20 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
             margin-bottom: 10px;
         }
 
+        .meaning-text {
+            line-height: 1.5;
+        }
+
+        .pos-text {
+            font-style: italic;
+            font-weight: bold;
+        }
+
         .example {
             color: #27ae60;
             font-style: italic;
             margin: 5px 0;
+            line-height: 1.5;
         }
         """;
     }
@@ -180,10 +210,15 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
             </div>
 
             <div class="section">
-                <div class="section-title">📚 Examples</div>
+
+                <div class="section-title">
+                    📚 Examples
+                </div>
+
                 <div class="example">
                     {{Examples}}
                 </div>
+
             </div>
 
         </div>
@@ -200,28 +235,63 @@ public sealed class AnkiModelInitializer : IAnkiModelInitializer
             </div>
 
             <div class="section">
-                <div class="section-title">📖 Meaning</div>
-                <div>{{Meaning}}</div>
+
+                <div class="section-title">
+                    📖 Meaning
+                </div>
+
+                <div class="meaning-text">
+                    {{Meaning}}
+                </div>
+
             </div>
 
             <div class="section">
-                <div class="section-title">🔄 Synonyms</div>
-                <div>{{Synonyms}}</div>
+
+                <div class="section-title">
+                    🔄 Synonyms
+                </div>
+
+                <div class="word-list">
+                    {{Synonyms}}
+                </div>
+
             </div>
 
             <div class="section">
-                <div class="section-title">⚡ Antonyms</div>
-                <div>{{Antonyms}}</div>
+
+                <div class="section-title">
+                    ⚡ Antonyms
+                </div>
+
+                <div class="word-list">
+                    {{Antonyms}}
+                </div>
+
             </div>
 
             <div class="section">
-                <div class="section-title">📚 Part of Speech</div>
-                <div>{{PartOfSpeech}}</div>
+
+                <div class="section-title">
+                    📚 Part of Speech
+                </div>
+
+                <div class="pos-text">
+                    {{PartOfSpeech}}
+                </div>
+
             </div>
 
             <div class="section">
-                <div class="section-title">🔗 Related Words</div>
-                <div>{{RelatedWords}}</div>
+
+                <div class="section-title">
+                    🔗 Related Words
+                </div>
+
+                <div class="word-list">
+                    {{RelatedWords}}
+                </div>
+
             </div>
 
         </div>

@@ -20,10 +20,19 @@ public sealed class AnkiCardMapper
                 ["PartOfSpeech"] = card.PartOfSpeech,
                 ["Meaning"] = card.Definition,
                 ["Examples"] = string.Join("<br>", card.Examples),
-                ["Synonyms"] = string.Join(", ", card.Synonyms),
-                ["Antonyms"] = string.Join(", ", card.Antonyms),
-                ["RelatedWords"] = string.Join(", ", card.RelatedWords)
+                ["Synonyms"] = FormatWordList(card.Synonyms),
+                ["Antonyms"] = FormatWordList(card.Antonyms),
+                ["RelatedWords"] = FormatWordList(card.RelatedWords),
             }
         };
     }
+
+    private static string FormatWordList(
+    IReadOnlyList<string> words)
+    {
+        return string.Join(
+            " ",
+            words.Select(word => $"<span class=\"word-item\">{word}</span>"));
+    }
+
 }

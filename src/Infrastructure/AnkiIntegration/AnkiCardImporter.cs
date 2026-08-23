@@ -25,7 +25,7 @@ public sealed class AnkiCardImporter : IAnkiCardImporter
         if (cards.Count == 0)
         {
             return new AnkiImportResult();
-        }
+        }   
 
         try
         {
