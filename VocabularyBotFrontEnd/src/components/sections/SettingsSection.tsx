@@ -27,7 +27,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
     examplesLimit: 3,
     deckName: 'Merriam Vocabulary',
     modelName: 'MerriamWebsterBasic',
-    cardStyle: 'Style 1',
+    cardStyle: 'Cyberpunk', // ← теперь Cyberpunk по умолчанию
     theme: 'Light',
     apiKey: '',
   });
@@ -198,9 +198,9 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
             onChange={(e) => handleChange('cardStyle', e.target.value)}
             style={styles.select}
           >
-            <option value="Style 1">Classic</option>
-            <option value="Style 2">Modern</option>
-            <option value="Style 3">Dark</option>
+            <option value="Cyberpunk">Cyberpunk</option>
+            <option value="Tokyo">Tokyo</option>
+            <option value="Coffee">Coffee</option>
           </select>
         </div>
 

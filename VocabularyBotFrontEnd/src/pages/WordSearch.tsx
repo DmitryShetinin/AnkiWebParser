@@ -7,6 +7,8 @@ import SettingsSection from '../components/sections/SettingsSection.tsx';
 import AboutSection from '../components/sections/AboutSection.tsx';
 import RegistrationSection from '../components/sections/RegistrationSection.tsx';
 import InstructionSection from '../components/sections/InstructionSection.tsx';
+ 
+import FlashcardBoard from '../components/sections/FlashcardBoard.tsx';
 
 const API_BASE_URL = 'http://localhost:5055';
 
@@ -35,6 +37,43 @@ export interface MenuItem {
   component: React.ReactNode;
   badge?: number;
 }
+
+// 👇 МОКОВЫЕ КАРТОЧКИ ДЛЯ ПРИМЕРА
+const mockCards = [
+  {
+    id: '1',
+    front: 'Serendipity',
+    back: {
+      meaning: 'The occurrence of events by chance in a happy or beneficial way.',
+      example: 'A serendipitous encounter changed his life.',
+      partOfSpeech: 'Noun',
+      synonyms: ['chance', 'fortuity', 'providence'],
+      antonyms: ['misfortune', 'calamity'],
+    },
+  },
+  {
+    id: '2',
+    front: 'Ephemeral',
+    back: {
+      meaning: 'Lasting for a very short time.',
+      example: 'The beauty of the sunset was ephemeral.',
+      partOfSpeech: 'Adjective',
+      synonyms: ['transient', 'fleeting', 'temporary'],
+      antonyms: ['permanent', 'eternal', 'enduring'],
+    },
+  },
+  {
+    id: '3',
+    front: 'Ubiquitous',
+    back: {
+      meaning: 'Present, appearing, or found everywhere.',
+      example: 'Smartphones have become ubiquitous in modern society.',
+      partOfSpeech: 'Adjective',
+      synonyms: ['omnipresent', 'universal', 'pervasive'],
+      antonyms: ['rare', 'scarce', 'limited'],
+    },
+  },
+];
 
 function WordSearch() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -155,13 +194,21 @@ function WordSearch() {
           ? notifications.length
           : undefined,
     },
-
+ {
+      id: 'flashcards',
+      title: 'Карточки',
+      emoji: '🃏',
+      component: <FlashcardBoard cards={mockCards} />,
+    },
     {
       id: 'instructions',
       title: 'Инструкция',
       emoji: '📖',
       component: <InstructionSection />,
     },
+
+    // 👇 НОВЫЙ ПУНКТ МЕНЮ — КАРТОЧКИ
+    
 
     {
       id: 'settings',
@@ -173,7 +220,6 @@ function WordSearch() {
           checkingAnki={checkingAnki}
           checkAnkiStatus={checkAnkiStatus}
           saveApiKey={saveApiKey}
-        
         />
       ),
     },

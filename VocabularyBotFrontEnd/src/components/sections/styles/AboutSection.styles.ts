@@ -5,23 +5,25 @@ export const styles = {
     padding: '2rem',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
-    borderRadius: '12px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    borderRadius: '20px',
+    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02)',
+    border: '1px solid var(--border)',
+    transition: 'background 0.3s, border-color 0.3s',
   },
 
   sectionHeader: {
- 
+   
     alignItems: 'center',
     gap: '1rem',
     marginBottom: '2rem',
     paddingBottom: '1.25rem',
-    borderBottom: '1px solid var(--border)',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
   },
 
   sectionIcon: {
     fontSize: '2rem',
     background: 'linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%)',
-    borderRadius: '0.75rem',
+    borderRadius: '16px',
     width: '3.5rem',
     height: '3.5rem',
     display: 'flex',
@@ -50,11 +52,11 @@ export const styles = {
 
   descriptionBox: {
     backgroundColor: 'var(--surface)',
-    borderRadius: '0.75rem',
+    borderRadius: '16px',
     padding: '1.5rem',
     marginBottom: '2rem',
-    border: '1px solid var(--border)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+    border: '1px solid rgba(0, 0, 0, 0.04)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.02)',
   },
 
   descriptionText: {
@@ -81,7 +83,7 @@ export const styles = {
 
   featureGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
     gap: '1rem',
     marginBottom: '2rem',
   },
@@ -91,10 +93,10 @@ export const styles = {
     gap: '1rem',
     padding: '1.25rem',
     backgroundColor: 'var(--surface)',
-    border: '1px solid var(--border)',
-    borderRadius: '0.75rem',
+    border: '1px solid rgba(0, 0, 0, 0.04)',
+    borderRadius: '16px',
     transition: 'all 0.2s ease',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)',
   },
 
   featureIcon: {
@@ -122,22 +124,22 @@ export const styles = {
 
   techGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
     gap: '0.75rem',
     marginBottom: '2rem',
   },
 
   techCard: {
     backgroundColor: 'var(--surface)',
-    border: '1px solid var(--border)',
-    borderRadius: '0.75rem',
+    border: '1px solid rgba(0, 0, 0, 0.04)',
+    borderRadius: '16px',
     padding: '1rem',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center' as const,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)',
   },
 
   techIcon: {
@@ -163,7 +165,7 @@ export const styles = {
     justifyContent: 'space-between',
     marginTop: '2rem',
     paddingTop: '1.5rem',
-    borderTop: '1px solid var(--border)',
+    borderTop: '1px solid rgba(0, 0, 0, 0.06)',
     fontSize: '0.875rem',
     color: 'var(--text-secondary)',
   },
@@ -176,7 +178,7 @@ export const styles = {
     backgroundColor: 'var(--primary)',
     color: '#ffffff',
     padding: '0.375rem 0.75rem',
-    borderRadius: '9999px',
+    borderRadius: '20px',
     fontSize: '0.75rem',
     fontWeight: '600',
   },

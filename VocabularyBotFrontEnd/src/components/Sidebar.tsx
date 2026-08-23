@@ -1,7 +1,6 @@
 import React from 'react';
 import { MenuItem, CSSProperties } from './../components/WordSearch.tsx';
 
-
 interface SidebarProps {
   menuItems: MenuItem[];
   activeMenu: string;
@@ -23,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, activeMenu, setActiveMenu,
       top: '0',
       bottom: '0',
       zIndex: 999,
-      transition: 'left 0.3s ease',
+      transition: 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)', // ← плавное выезжание с пружиной
       boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
     },
     
@@ -67,16 +66,20 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, activeMenu, setActiveMenu,
       cursor: 'pointer',
       fontSize: '0.9375rem',
       color: 'var(--text-secondary)',
-      transition: 'all 0.2s ease',
+      transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)', // ← мягкое ускорение
       textAlign: 'left',
+      transform: 'scale(1)', // начальное состояние
+      willChange: 'transform, background-color, box-shadow',
     },
     
+    // Активный пункт — с плавным появлением
     activeMenuItem: {
       backgroundColor: 'var(--surface)',
       color: 'var(--primary)',
       fontWeight: '500',
       boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-      border: '1px solid var(--border)',
+      border: '3px solid var(--border)',
+      transform: 'scale(1.02)', // лёгкое увеличение активного пункта
     },
     
     menuItemEmoji: {
@@ -126,6 +129,22 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, activeMenu, setActiveMenu,
             style={{
               ...styles.menuItem,
               ...(activeMenu === item.id ? styles.activeMenuItem : {}),
+            }}
+            // Добавим реакцию на нажатие (микро-анимация)
+            onMouseDown={(e) => {
+              const el = e.currentTarget;
+              el.style.transform = 'scale(0.96)';
+              el.style.transition = 'transform 0.1s ease';
+            }}
+            onMouseUp={(e) => {
+              const el = e.currentTarget;
+              el.style.transform = activeMenu === item.id ? 'scale(1.02)' : 'scale(1)';
+              el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget;
+              el.style.transform = activeMenu === item.id ? 'scale(1.02)' : 'scale(1)';
+              el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
             }}
           >
             <span style={styles.menuItemEmoji}>{item.emoji}</span>

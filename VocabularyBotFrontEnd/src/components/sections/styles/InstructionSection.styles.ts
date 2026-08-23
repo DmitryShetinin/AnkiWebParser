@@ -5,8 +5,10 @@ export const styles = {
     padding: '2rem',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
-    borderRadius: '12px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    borderRadius: '20px',
+    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02)',
+    border: '1px solid var(--border)',
+    transition: 'background 0.3s, border-color 0.3s',
   },
 
   sectionTitle: {
@@ -27,10 +29,10 @@ export const styles = {
     gap: '10px',
     padding: '20px',
     marginBottom: '24px',
-    borderRadius: '12px',
+    borderRadius: '16px',
     backgroundColor: 'var(--surface)',
     border: '1px solid var(--border)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.02)',
   },
 
   flowItem: {
@@ -59,10 +61,10 @@ export const styles = {
   stepContainer: {
     marginBottom: '16px',
     padding: '18px',
-    borderRadius: '10px',
+    borderRadius: '14px',
     backgroundColor: 'var(--surface)',
     border: '1px solid var(--border)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)',
   },
 
   stepTitle: {
@@ -94,14 +96,14 @@ export const styles = {
   },
 
   tipBox: {
-    padding: '16px',
+    padding: '16px 20px',
     marginTop: '8px',
-    borderRadius: '10px',
-    backgroundColor: 'var(--surface)',
-    border: '1px solid var(--primary)',
+    borderRadius: '14px',
+    backgroundColor: 'rgba(59, 130, 246, 0.04)',
+    border: '1px solid rgba(59, 130, 246, 0.15)',
     fontSize: '15px',
     lineHeight: '1.5',
     color: 'var(--text)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.01)',
   },
 };

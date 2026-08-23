@@ -1,12 +1,10 @@
 // ProgramSection.styles.ts
 
-// Базовые объекты стилей
 export const styles = {
-  // ← ЕДИНЫЙ КОНТЕЙНЕР ДЛЯ ВСЕГО
   container: {
     width: '90%',
     padding: '2rem',
-    borderRadius: '12px',
+    borderRadius: '20px',
   },
   header: {
     textAlign: 'center' as const,
@@ -25,8 +23,9 @@ export const styles = {
   searchPanel: {
     width: '95%',
     backgroundColor: 'var(--surface)',
-    borderRadius: '0.75rem',
-    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03), 0 1px 4px rgba(0, 0, 0, 0.02)',
+    border: '1px solid var(--border)',
     padding: '2rem',
   },
   searchContainer: {
@@ -36,34 +35,34 @@ export const styles = {
   input: {
     flex: '1',
     padding: '0.875rem 1rem',
-    border: '1px solid var(--border)',
-    borderRadius: '0.5rem',
+    border: '1px solid rgba(0, 0, 0, 0.08)',
+    borderRadius: '12px',
     outline: 'none',
     fontSize: '1rem',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
-    transition: 'border-color 0.2s ease',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
   },
   hint: {
     marginTop: '1rem',
-    padding: '0.75rem',
-    backgroundColor: 'var(--surface)',
-    borderRadius: '0.5rem',
+    padding: '0.75rem 1rem',
+    backgroundColor: 'rgba(59, 130, 246, 0.04)',
+    borderRadius: '12px',
     fontSize: '0.875rem',
-    color: 'var(--primary)',
+    color: 'var(--text-secondary)',
     borderLeft: '3px solid var(--primary)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
   },
   notificationsPanel: {
     backgroundColor: 'var(--surface)',
-    borderRadius: '0.75rem',
-    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03), 0 1px 4px rgba(0, 0, 0, 0.02)',
+    border: '1px solid var(--border)',
     overflow: 'hidden',
     marginTop: '1.5rem',
   },
   panelHeader: {
     padding: '1.25rem 1.5rem',
-    borderBottom: '1px solid var(--border)',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
     backgroundColor: 'var(--surface)',
   },
   panelTitle: {
@@ -74,11 +73,11 @@ export const styles = {
   clearButton: {
     color: '#ef4444',
     fontSize: '0.875rem',
-    backgroundColor: 'transparent',
-    border: '1px solid #fee2e2',
+    backgroundColor: 'rgba(239, 68, 68, 0.04)',
+    border: '1px solid rgba(239, 68, 68, 0.15)',
     cursor: 'pointer',
     padding: '0.375rem 0.75rem',
-    borderRadius: '0.375rem',
+    borderRadius: '8px',
     fontWeight: '500',
     transition: 'all 0.2s ease',
   },
@@ -97,13 +96,13 @@ export const styles = {
     backgroundColor: 'var(--primary)',
     color: 'white',
     padding: '0.625rem 1.25rem',
-    borderRadius: '0.5rem',
+    borderRadius: '12px',
     fontSize: '0.875rem',
     marginBottom: '0.5rem',
     border: 'none',
     cursor: 'pointer',
     fontWeight: '500',
-    transition: 'background-color 0.2s ease',
+    transition: 'background 0.2s ease, transform 0.1s ease',
   },
   statusContainer: {
     display: 'flex',
@@ -130,39 +129,38 @@ export const styles = {
     marginTop: '2rem',
     padding: '1rem',
     backgroundColor: 'var(--surface)',
-    borderRadius: '0.5rem',
+    borderRadius: '12px',
     fontSize: '0.75rem',
     color: 'var(--text-secondary)',
     textAlign: 'center' as const,
     border: '1px solid var(--border)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)',
   },
 };
 
-// Функции для динамических стилей
 export const getSearchButtonStyle = (disabled: boolean) => ({
   backgroundColor: 'var(--primary)',
   color: 'white',
   padding: '0.875rem 1.75rem',
-  borderRadius: '0.5rem',
+  borderRadius: '12px',
   fontWeight: '500',
   fontSize: '1rem',
   opacity: disabled ? 0.5 : 1,
   cursor: disabled ? 'not-allowed' : 'pointer',
   minWidth: '140px',
   border: 'none',
-  transition: 'background-color 0.2s ease',
+  transition: 'background 0.2s ease, opacity 0.2s ease',
 });
 
 export const getStatusBadgeStyle = (connected: boolean) => ({
   display: 'inline-block',
   padding: '0.375rem 0.875rem',
-  borderRadius: '0.375rem',
-  backgroundColor: connected ? '#d1fae5' : '#fee2e2',
-  color: connected ? '#065f46' : '#991b1b',
+  borderRadius: '20px',
+  backgroundColor: connected ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+  color: connected ? '#10b981' : '#ef4444',
   fontSize: '0.875rem',
   fontWeight: 500,
-  border: `1px solid ${connected ? '#a7f3d0' : '#fecaca'}`,
+  border: `1px solid ${connected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
 });
 
 export const getColorBoxStyle = (color: string, borderColor: string) => ({
@@ -170,5 +168,5 @@ export const getColorBoxStyle = (color: string, borderColor: string) => ({
   height: '16px',
   backgroundColor: color,
   border: `1px solid ${borderColor}`,
-  borderRadius: '4px',
+  borderRadius: '6px',
 });
