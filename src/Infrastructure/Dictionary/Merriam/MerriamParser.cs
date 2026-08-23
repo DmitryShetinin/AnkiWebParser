@@ -229,7 +229,7 @@ public sealed class MerriamParser : IDictionaryParser
             var exampleText = text.GetString();
 
             if (!string.IsNullOrWhiteSpace(exampleText))
-                yield return exampleText;
+                yield return _textFormatter.Format(exampleText);
         }
     }
 }
