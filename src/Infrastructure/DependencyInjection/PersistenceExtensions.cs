@@ -4,8 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Security;
 using Application.Abstractions;
-using Infrastructure.Repositories;
+
 
 public static class PersistenceExtensions
 {
@@ -35,9 +36,8 @@ public static class PersistenceExtensions
         });
 
     
-   
-
-    services.AddScoped<IProfileRepository, ProfileRepository>();
+  services.AddScoped<IPasswordHasher, PasswordHasher>();
+  services.AddScoped<IJwtService, JwtService>();
  
     return services;
   }

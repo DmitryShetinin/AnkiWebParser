@@ -1,6 +1,9 @@
 
 
 using Application.Dictionary.Merriam;
+using Application.Features.Auth.Login;
+using Application.Features.Auth.Me;
+using Application.Features.Auth.Register;
 using Application.Features.SettingsUser.GetProfile;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +19,12 @@ public static class ApplicationExtensions
     {
  
         
+        services.AddScoped<RegisterHandler>();
         services.AddScoped<GetProfileHandler>();
         services.AddScoped<UpdateProfileHandler>();
+        services.AddScoped<LoginHandler>();
+
+        services.AddScoped<GetCurrentUserHandler>();
 
    
 

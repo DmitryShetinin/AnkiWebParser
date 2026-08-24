@@ -10,7 +10,8 @@ public static class DependencyInjection
       this IServiceCollection services,
       IConfiguration configuration)
   {
-    services.AddDictionary(configuration)
+    services.AddRepositories()
+            .AddDictionary(configuration)
             .AddAnki(configuration)
             .AddPersistence(configuration);
 
