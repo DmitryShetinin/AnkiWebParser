@@ -30,6 +30,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(x => x.Username)
             .IsUnique();
+
+        builder.HasOne(x => x.Profile)
+            .WithOne(x => x.User)
+            .HasForeignKey<Profile>(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

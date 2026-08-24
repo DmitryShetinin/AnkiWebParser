@@ -36,9 +36,15 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -61,13 +67,25 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("Profile", b =>
                 {
+                    b.HasOne("Core.Models.User.User", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("AccountSettings", "Account", b1 =>
                         {
                             b1.Property<Guid>("ProfileId")
@@ -76,42 +94,6 @@ namespace Infrastructure.Persistence.Migrations
                             b1.Property<string>("Avatar")
                                 .HasMaxLength(500)
                                 .HasColumnType("character varying(500)");
-
-                            b1.Property<string>("Email")
-                                .IsRequired()
-                                .HasMaxLength(255)
-                                .HasColumnType("character varying(255)");
-
-                            b1.Property<string>("Username")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("character varying(50)");
-
-                            b1.HasKey("ProfileId");
-
-                            b1.ToTable("Profiles");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProfileId");
-                        });
-
-                    b.OwnsOne("AnkiSettings", "Anki", b1 =>
-                        {
-                            b1.Property<Guid>("ProfileId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<bool>("AutoCreateDeck")
-                                .HasColumnType("boolean");
-
-                            b1.Property<string>("DeckName")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)");
-
-                            b1.Property<string>("ModelName")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)");
 
                             b1.HasKey("ProfileId");
 
@@ -170,13 +152,18 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Account")
                         .IsRequired();
 
-                    b.Navigation("Anki")
-                        .IsRequired();
-
                     b.Navigation("Appearance")
                         .IsRequired();
 
                     b.Navigation("Dictionary")
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Core.Models.User.User", b =>
+                {
+                    b.Navigation("Profile")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

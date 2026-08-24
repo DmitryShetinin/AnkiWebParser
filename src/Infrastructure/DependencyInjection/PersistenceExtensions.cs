@@ -38,7 +38,7 @@ public static class PersistenceExtensions
     
   services.AddScoped<IPasswordHasher, PasswordHasher>();
   services.AddScoped<IJwtService, JwtService>();
- 
+ services.AddScoped<IUnitOfWork, UnitOfWork>();
     return services;
   }
 }

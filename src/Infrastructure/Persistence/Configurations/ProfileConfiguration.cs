@@ -15,7 +15,7 @@ public sealed class ProfileConfiguration
 
         ConfigureAccount(builder);
         ConfigureDictionary(builder);
-        ConfigureAnki(builder);
+      
         ConfigureAppearance(builder);
     }
 
@@ -26,14 +26,6 @@ public sealed class ProfileConfiguration
             x => x.Account,
             account =>
             {
-                account.Property(x => x.Username)
-                    .HasMaxLength(50)
-                    .IsRequired();
-
-                account.Property(x => x.Email)
-                    .HasMaxLength(255)
-                    .IsRequired();
-
                 account.Property(x => x.Avatar)
                     .HasMaxLength(500);
             });
@@ -60,25 +52,7 @@ public sealed class ProfileConfiguration
             });
     }
 
-    private static void ConfigureAnki(
-        EntityTypeBuilder<Profile> builder)
-    {
-        builder.OwnsOne(
-            x => x.Anki,
-            anki =>
-            {
-                anki.Property(x => x.DeckName)
-                    .HasMaxLength(100)
-                    .IsRequired();
-
-                anki.Property(x => x.ModelName)
-                    .HasMaxLength(100)
-                    .IsRequired();
-
-                anki.Property(x => x.AutoCreateDeck)
-                    .IsRequired();
-            });
-    }
+  
 
     private static void ConfigureAppearance(
         EntityTypeBuilder<Profile> builder)
