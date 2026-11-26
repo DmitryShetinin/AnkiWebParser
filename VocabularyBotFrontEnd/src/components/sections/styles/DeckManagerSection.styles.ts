@@ -40,6 +40,12 @@ export const styles: { [key: string]: CSSProperties } = {
     overflowY: 'auto',
     padding: '0.75rem',
   },
+  sidebarMessage: {
+    padding: '0.75rem 1rem',
+    color: 'var(--text-secondary)',
+    fontSize: '0.85rem',
+    lineHeight: 1.4,
+  },
   deckItem: {
     display: 'flex',
     alignItems: 'center',

@@ -89,15 +89,18 @@ function WordSearch() {
         addedAt: new Date().toISOString(),
       }));
 
-    const storage = isAuthenticated ? apiWordStorage : wordStorage;
-    await Promise.all(cardsToAdd.map((card) => storage.add(card)));
+    if (isAuthenticated) {
+      await apiWordStorage.addMany(cardsToAdd);
+    } else {
+      await Promise.all(cardsToAdd.map((card) => wordStorage.add(card)));
+    }
     setCollection((currentCollection) => [...currentCollection, ...cardsToAdd]);
 
     return cardsToAdd.length;
   };
 
   const importGuestCards = async () => {
-    await Promise.all(guestCardsToImport.map((card) => apiWordStorage.add(card)));
+    await apiWordStorage.addMany(guestCardsToImport);
     setCollection(await apiWordStorage.getAll());
     setGuestCardsToImport([]);
     addNotification({

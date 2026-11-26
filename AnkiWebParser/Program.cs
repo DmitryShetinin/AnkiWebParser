@@ -2,10 +2,19 @@ using System.Text;
 using AnkiIntegration;
 using Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile(
+        "appsettings.Development.local.json",
+        optional: true,
+        reloadOnChange: true);
+}
 
 // ========== ДОБАВЛЯЕМ CORS ==========
 builder.Services.AddCors(options =>
@@ -83,6 +92,13 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<Infrastructure.Persistence.AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 await app.Services
     .GetRequiredService<IAnkiModelInitializer>()

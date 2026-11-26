@@ -13,6 +13,8 @@ public sealed class SavedCard
     public List<string> Antonyms { get; private set; } = [];
     public List<string> RelatedWords { get; private set; } = [];
     public DateTime CreatedAt { get; private set; }
+    public Core.Models.User.User User { get; private set; } = null!;
+    public ICollection<DeckCard> DeckMemberships { get; private set; } = new List<DeckCard>();
 
     private SavedCard() { }
 

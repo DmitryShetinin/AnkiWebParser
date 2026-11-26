@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { styles } from '../sections/styles/DeckManagerSection.styles.ts';
+import { apiClient } from '../../api/client.ts';
 
 // ─── Типы ─────────────────────────────────────────────────────────────────────
 export interface DeckCard {
@@ -22,154 +23,43 @@ export interface Deck {
 }
 
 // ─── Моковые данные ─────────────────────────────────────────────────────────
-const mockDecks: Deck[] = [
-  {
-    id: '1',
-    name: 'Английский – базовый',
-    description: 'Повседневные слова и фразы',
-    cards: [
-      {
-        id: 'a1',
-        word: 'apple',
-        partOfSpeech: 'noun',
-        definition: 'яблоко',
-        examples: ['I eat an apple.', 'She bought apples.'],
-        synonyms: ['fruit'],
-        antonyms: [],
-        relatedWords: ['orchard', 'pie'],
-      },
-      {
-        id: 'a2',
-        word: 'run',
-        partOfSpeech: 'verb',
-        definition: 'бежать',
-        examples: ['I run every morning.', 'He runs fast.'],
-        synonyms: ['sprint', 'jog'],
-        antonyms: ['walk'],
-        relatedWords: ['runner', 'race'],
-      },
-      {
-        id: 'a3',
-        word: 'beautiful',
-        partOfSpeech: 'adjective',
-        definition: 'красивый',
-        examples: ['A beautiful sunset.', 'She is beautiful.'],
-        synonyms: ['pretty', 'gorgeous'],
-        antonyms: ['ugly'],
-        relatedWords: ['beauty'],
-      },
-      ...Array.from({ length: 35 }, (_, i) => ({
-        id: `a${i + 4}`,
-        word: `word${i + 4}`,
-        partOfSpeech: 'noun',
-        definition: `определение ${i + 4}`,
-        examples: [`Пример ${i + 4}`],
-        synonyms: [],
-        antonyms: [],
-        relatedWords: [],
-      })),
-    ],
-  },
-  {
-    id: '2',
-    name: 'Испанский – глаголы',
-    description: 'Основные глаголы и спряжения',
-    cards: [
-      {
-        id: 's1',
-        word: 'ser',
-        partOfSpeech: 'verb',
-        definition: 'быть',
-        examples: ['Yo soy estudiante.', 'Ella es doctora.'],
-        synonyms: ['estar (временно)'],
-        antonyms: [],
-        relatedWords: ['ser humano'],
-      },
-      {
-        id: 's2',
-        word: 'estar',
-        partOfSpeech: 'verb',
-        definition: 'находиться',
-        examples: ['Estoy en casa.', '¿Dónde estás?'],
-        synonyms: ['quedarse'],
-        antonyms: [],
-        relatedWords: ['estado'],
-      },
-      {
-        id: 's3',
-        word: 'tener',
-        partOfSpeech: 'verb',
-        definition: 'иметь',
-        examples: ['Tengo un perro.', 'Ella tiene 20 años.'],
-        synonyms: ['poseer'],
-        antonyms: [],
-        relatedWords: ['tenedor'],
-      },
-      ...Array.from({ length: 20 }, (_, i) => ({
-        id: `s${i + 4}`,
-        word: `verb${i + 4}`,
-        partOfSpeech: 'verb',
-        definition: `глагол ${i + 4}`,
-        examples: [`Пример ${i + 4}`],
-        synonyms: [],
-        antonyms: [],
-        relatedWords: [],
-      })),
-    ],
-  },
-  {
-    id: '3',
-    name: 'Немецкий – существительные',
-    description: 'Слова с артиклями',
-    cards: [
-      {
-        id: 'g1',
-        word: 'Haus',
-        partOfSpeech: 'noun',
-        definition: 'дом',
-        examples: ['Das Haus ist groß.', 'Wir wohnen in einem Haus.'],
-        synonyms: ['Gebäude'],
-        antonyms: [],
-        relatedWords: ['Hausaufgabe'],
-      },
-      {
-        id: 'g2',
-        word: 'Auto',
-        partOfSpeech: 'noun',
-        definition: 'машина',
-        examples: ['Das Auto ist neu.', 'Er fährt mit dem Auto.'],
-        synonyms: ['Wagen'],
-        antonyms: [],
-        relatedWords: ['Autobahn'],
-      },
-      {
-        id: 'g3',
-        word: 'Buch',
-        partOfSpeech: 'noun',
-        definition: 'книга',
-        examples: ['Ich lese ein Buch.', 'Das Buch ist interessant.'],
-        synonyms: ['Lektüre'],
-        antonyms: [],
-        relatedWords: ['Bücherei'],
-      },
-    ],
-  },
-];
-
 const PAGE_SIZE = 12;
 
 // ─── Компонент ───────────────────────────────────────────────────────────────
 const DeckManagerSection: React.FC = () => {
+  const [decks, setDecks] = useState<Deck[]>([]);
   const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [markedCards, setMarkedCards] = useState<Set<string>>(new Set());
   const [showOnlyMarked, setShowOnlyMarked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    apiClient.get<Deck[]>('/api/decks')
+      .then(({ data }) => {
+        if (!cancelled) setDecks(data);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setLoadError(error.response?.status === 401
+          ? 'Войдите в аккаунт, чтобы открыть колоды из базы данных.'
+          : 'Не удалось загрузить колоды из базы данных. Проверьте подключение к серверу.');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, []);
 
   // Активная колода
   const activeDeck = useMemo(
-    () => mockDecks.find((deck) => deck.id === activeDeckId) || null,
-    [activeDeckId]
+    () => decks.find((deck) => deck.id === activeDeckId) || null,
+    [activeDeckId, decks]
   );
 
   // Фильтрация карточек
@@ -266,7 +156,7 @@ const DeckManagerSection: React.FC = () => {
           <h2 style={styles.sidebarTitle}>📚 Колоды</h2>
         </div>
         <div style={styles.deckList}>
-          {mockDecks.map((deck) => (
+          {decks.map((deck) => (
             <div
               key={deck.id}
               style={{
@@ -282,6 +172,11 @@ const DeckManagerSection: React.FC = () => {
               <span style={styles.deckCount}>{deck.cards.length}</span>
             </div>
           ))}
+          {isLoading && <div style={styles.sidebarMessage}>Загружаю колоды…</div>}
+          {loadError && <div style={styles.sidebarMessage}>{loadError}</div>}
+          {!isLoading && !loadError && decks.length === 0 && (
+            <div style={styles.sidebarMessage}>Колоды появятся после сохранения первой карточки.</div>
+          )}
         </div>
       </aside>
 
@@ -291,7 +186,11 @@ const DeckManagerSection: React.FC = () => {
           <div style={styles.placeholder}>
             <div style={styles.placeholderIcon}>🃏</div>
             <div style={styles.placeholderText}>
-              Выберите колоду слева, чтобы увидеть карточки
+              {loadError || (isLoading
+                ? 'Загружаю колоды…'
+                : decks.length > 0
+                  ? 'Выберите колоду слева, чтобы увидеть карточки'
+                  : 'Сохраните первую карточку, чтобы создать колоду.')}
             </div>
           </div>
         ) : (

@@ -4,7 +4,12 @@ import { StoredWord } from './types.ts';
 
 export class ApiWordStorage implements WordStorage {
   async add(word: StoredWord): Promise<void> {
-    await apiClient.post('/api/collection/import', [word]);
+    await this.addMany([word]);
+  }
+
+  async addMany(words: StoredWord[]): Promise<void> {
+    if (words.length === 0) return;
+    await apiClient.post('/api/collection/import', words);
   }
 
   async getAll(): Promise<StoredWord[]> {
