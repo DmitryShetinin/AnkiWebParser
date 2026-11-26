@@ -7,6 +7,20 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ========== ДОБАВЛЯЕМ CORS ==========
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000") // твой фронтенд
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials(); // если используешь cookies или авторизацию
+        });
+});
+// ====================================
+
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication();
@@ -79,6 +93,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// ========== ИСПОЛЬЗУЕМ CORS ==========
+app.UseCors("AllowFrontend"); // обязательно до UseAuthentication
+// ====================================
 
 app.UseAuthentication();
 app.UseAuthorization();

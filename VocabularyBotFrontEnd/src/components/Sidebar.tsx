@@ -1,5 +1,6 @@
 import React from 'react';
 import { MenuItem, CSSProperties } from './../components/WordSearch.tsx';
+import { useAuth } from '../auth/AuthProvider.tsx';
 
 interface SidebarProps {
   menuItems: MenuItem[];
@@ -9,6 +10,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ menuItems, activeMenu, setActiveMenu, collapsed }) => {
+  const { user, logout } = useAuth();
   const styles: { [key: string]: CSSProperties } = {
     sidebar: {
       width: '250px',
@@ -109,6 +111,24 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, activeMenu, setActiveMenu,
       color: 'var(--text-secondary)',
       textAlign: 'center',
     },
+
+    account: {
+      padding: '1rem 0',
+      borderTop: '1px solid var(--border)',
+      color: 'var(--text-secondary)',
+      fontSize: '0.875rem',
+    },
+
+    logoutButton: {
+      width: '100%',
+      marginTop: '0.75rem',
+      padding: '0.6rem',
+      border: '1px solid var(--border)',
+      borderRadius: '0.5rem',
+      backgroundColor: 'transparent',
+      color: 'var(--text)',
+      cursor: 'pointer',
+    },
   };
 
   return (
@@ -155,6 +175,15 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, activeMenu, setActiveMenu,
           </button>
         ))}
       </div>
+
+      {user && (
+        <div style={styles.account}>
+          <div>👤 {user.username}</div>
+          <button type="button" onClick={logout} style={styles.logoutButton}>
+            Выйти
+          </button>
+        </div>
+      )}
       
       <div style={styles.footer}>
         <div>Vocabulary Bot v1.0</div>

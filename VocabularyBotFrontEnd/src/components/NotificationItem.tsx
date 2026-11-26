@@ -55,14 +55,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     }
   };
 
-  const getTimeColor = () => {
-    switch (type) {
-      case 'success': return '#10b981';
-      case 'error': return '#ef4444';
-      default: return 'var(--primary)';
-    }
-  };
-
   const getIcon = () => {
     switch (type) {
       case 'success': return '✅ ';

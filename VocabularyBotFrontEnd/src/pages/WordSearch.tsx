@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 import Sidebar from '../components/Sidebar.tsx';
 import ProgramSection from '../components/sections/ProgramSection.tsx';
@@ -7,15 +6,20 @@ import SettingsSection from '../components/sections/SettingsSection.tsx';
 import AboutSection from '../components/sections/AboutSection.tsx';
 import RegistrationSection from '../components/sections/RegistrationSection.tsx';
 import InstructionSection from '../components/sections/InstructionSection.tsx';
- 
+import { useAuth } from '../auth/AuthProvider.tsx';
+
 import FlashcardBoard from '../components/sections/FlashcardBoard.tsx';
+import { Flashcard } from '../components/sections/FlashcardBoard.tsx';
+import { apiClient } from '../api/client.ts';
+import { LocalWordStorage } from '../words/LocalWordStorage.ts';
+import { ApiWordStorage } from '../words/ApiWordStorage.ts';
+import { DictionaryCard, StoredWord } from '../words/types.ts';
+import DeckManagerSection from '../components/sections/DeckManagerSection.tsx';
+import { CardStyle, getSavedCardStyle } from '../components/flashcardTheme.ts';
 
-const API_BASE_URL = 'http://localhost:5055';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-});
+const wordStorage = new LocalWordStorage();
+const apiWordStorage = new ApiWordStorage();
+const api = apiClient;
 
 export interface Notification {
   id: number;
@@ -38,49 +42,83 @@ export interface MenuItem {
   badge?: number;
 }
 
-// 👇 МОКОВЫЕ КАРТОЧКИ ДЛЯ ПРИМЕРА
-const mockCards = [
-  {
-    id: '1',
-    front: 'Serendipity',
-    back: {
-      meaning: 'The occurrence of events by chance in a happy or beneficial way.',
-      example: 'A serendipitous encounter changed his life.',
-      partOfSpeech: 'Noun',
-      synonyms: ['chance', 'fortuity', 'providence'],
-      antonyms: ['misfortune', 'calamity'],
-    },
-  },
-  {
-    id: '2',
-    front: 'Ephemeral',
-    back: {
-      meaning: 'Lasting for a very short time.',
-      example: 'The beauty of the sunset was ephemeral.',
-      partOfSpeech: 'Adjective',
-      synonyms: ['transient', 'fleeting', 'temporary'],
-      antonyms: ['permanent', 'eternal', 'enduring'],
-    },
-  },
-  {
-    id: '3',
-    front: 'Ubiquitous',
-    back: {
-      meaning: 'Present, appearing, or found everywhere.',
-      example: 'Smartphones have become ubiquitous in modern society.',
-      partOfSpeech: 'Adjective',
-      synonyms: ['omnipresent', 'universal', 'pervasive'],
-      antonyms: ['rare', 'scarce', 'limited'],
-    },
-  },
-];
-
 function WordSearch() {
+  const { isAuthenticated } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [collection, setCollection] = useState<StoredWord[]>([]);
+  const [guestCardsToImport, setGuestCardsToImport] = useState<StoredWord[]>([]);
   const [ankiConnected, setAnkiConnected] = useState<boolean | null>(null);
   const [checkingAnki, setCheckingAnki] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string>('program');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [cardStyle, setCardStyle] = useState<CardStyle>(getSavedCardStyle);
+
+  useEffect(() => {
+    const loadCollection = async () => {
+      if (!isAuthenticated) {
+        setGuestCardsToImport([]);
+        setCollection(await wordStorage.getAll());
+        return;
+      }
+
+      const [cloudCards, guestCards] = await Promise.all([
+        apiWordStorage.getAll(),
+        wordStorage.getAll(),
+      ]);
+
+      setCollection(cloudCards);
+      setGuestCardsToImport(guestCards);
+    };
+
+    void loadCollection();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated && activeMenu === 'auth') {
+      setActiveMenu('program');
+    }
+  }, [activeMenu, isAuthenticated]);
+
+  const addCardsToCollection = async (cards: DictionaryCard[]) => {
+    const existingIds = new Set(collection.map((card) => card.externalId));
+    const cardsToAdd = cards
+      .filter((card) => !existingIds.has(card.externalId))
+      .map((card) => ({
+        ...card,
+        id: card.externalId,
+        addedAt: new Date().toISOString(),
+      }));
+
+    const storage = isAuthenticated ? apiWordStorage : wordStorage;
+    await Promise.all(cardsToAdd.map((card) => storage.add(card)));
+    setCollection((currentCollection) => [...currentCollection, ...cardsToAdd]);
+
+    return cardsToAdd.length;
+  };
+
+  const importGuestCards = async () => {
+    await Promise.all(guestCardsToImport.map((card) => apiWordStorage.add(card)));
+    setCollection(await apiWordStorage.getAll());
+    setGuestCardsToImport([]);
+    addNotification({
+      word: '',
+      type: 'success',
+      message: '✅ Локальные карточки перенесены в аккаунт.',
+    });
+  };
+
+  const flashcards: Flashcard[] = collection.map((card) => ({
+    id: card.id,
+    front: card.word,
+    back: {
+      meaning: card.definition,
+      example: card.examples[0],
+      partOfSpeech: card.partOfSpeech,
+      synonyms: card.synonyms,
+      antonyms: card.antonyms,
+      relatedWords: card.relatedWords,
+    },
+  }));
 
   const addNotification = (
     notification: Omit<Notification, 'id' | 'time'>
@@ -144,9 +182,8 @@ function WordSearch() {
         addNotification({
           word: '',
           type: 'success',
-          message: `✅ Anki подключен (колод: ${
-            response.data.decks?.length || 0
-          })`,
+          message: `✅ Anki подключен (колод: ${response.data.decks?.length || 0
+            })`,
         });
       } else {
         addNotification({
@@ -186,7 +223,8 @@ function WordSearch() {
           checkAnkiStatus={checkAnkiStatus}
           addNotification={addNotification}
           clearNotifications={clearNotifications}
-          api={api}
+          api={apiClient}
+          onAddCards={addCardsToCollection}
         />
       ),
       badge:
@@ -194,11 +232,17 @@ function WordSearch() {
           ? notifications.length
           : undefined,
     },
- {
+    {
       id: 'flashcards',
       title: 'Карточки',
       emoji: '🃏',
-      component: <FlashcardBoard cards={mockCards} />,
+      component: <FlashcardBoard cards={flashcards} cardStyle={cardStyle} />,
+    },
+    {
+    id: 'decks',
+    title: 'Колоды',
+    emoji: '📚',
+    component: <DeckManagerSection />,
     },
     {
       id: 'instructions',
@@ -208,7 +252,7 @@ function WordSearch() {
     },
 
     // 👇 НОВЫЙ ПУНКТ МЕНЮ — КАРТОЧКИ
-    
+
 
     {
       id: 'settings',
@@ -220,6 +264,7 @@ function WordSearch() {
           checkingAnki={checkingAnki}
           checkAnkiStatus={checkAnkiStatus}
           saveApiKey={saveApiKey}
+          onCardStyleChange={setCardStyle}
         />
       ),
     },
@@ -231,12 +276,13 @@ function WordSearch() {
       component: <AboutSection />,
     },
 
-    {
-      id: 'registration',
-      title: 'Регистрация',
+    ...(!isAuthenticated ? [{
+      id: 'auth',
+      title: 'Войти / Регистрация',
       emoji: '👤',
       component: <RegistrationSection />,
-    },
+    }] : []),
+
   ];
 
   const styles: { [key: string]: CSSProperties } = {
@@ -269,12 +315,23 @@ function WordSearch() {
       overflowY: 'auto',
     },
 
+    flashcardContentArea: {
+      height: '100dvh',
+      minHeight: 0,
+      overflowY: 'hidden',
+    },
+
     contentWrapper: {
       width: '100%',
       maxWidth: 'none',
       margin: '0',
-      padding: '0',
+      paddingLeft: '2rem',
       boxSizing: 'border-box',
+    },
+
+    flashcardContentWrapper: {
+      height: 'calc(100dvh - 4rem)',
+      minHeight: 0,
     },
 
     toggleButton: {
@@ -324,7 +381,10 @@ function WordSearch() {
         collapsed={sidebarCollapsed}
       />
 
-      <main style={styles.contentArea}>
+      <main style={{
+        ...styles.contentArea,
+        ...(activeMenu === 'flashcards' ? styles.flashcardContentArea : {}),
+      }}>
 
         <button
           onClick={toggleSidebar}
@@ -338,7 +398,20 @@ function WordSearch() {
           {sidebarCollapsed ? '→' : '←'}
         </button>
 
-        <div style={styles.contentWrapper}>
+        <div style={{
+          ...styles.contentWrapper,
+          ...(activeMenu === 'flashcards' ? styles.flashcardContentWrapper : {}),
+        }}>
+          {isAuthenticated && guestCardsToImport.length > 0 && (
+            <div style={{
+              marginBottom: '1rem', padding: '1rem', borderRadius: '0.75rem',
+              backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)',
+            }}>
+              В локальной коллекции {guestCardsToImport.length} карточек. Импортировать их в аккаунт?
+              <button onClick={importGuestCards} style={{ marginLeft: '1rem' }}>Импортировать</button>
+              <button onClick={() => setGuestCardsToImport([])} style={{ marginLeft: '0.5rem' }}>Позже</button>
+            </div>
+          )}
           {activeComponent}
         </div>
 

@@ -1,5 +1,5 @@
 using Application.Abstractions;
- 
+
 using Core.Models.User;
 
 namespace Application.Features.Auth.Register;
@@ -8,15 +8,18 @@ public sealed class RegisterHandler
 {
     private readonly IUserRepository _userRepository;
     private readonly IProfileRepository _profileRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordHasher _passwordHasher;
 
     public RegisterHandler(
         IUserRepository userRepository,
         IProfileRepository profileRepository,
+        IUnitOfWork unitOfWork,
         IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
         _profileRepository = profileRepository;
+        _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
     }
 
@@ -38,32 +41,25 @@ public sealed class RegisterHandler
             throw new InvalidOperationException("Username already exists.");
         }
 
-        var userId = Guid.NewGuid();
+        var passwordHash = _passwordHasher.Hash(command.Password);
 
-        var user = new User
-        {
-            Id = userId,
-            Username = command.Username,
-            Email = command.Email,
-            PasswordHash = _passwordHasher.Hash(command.Password)
-        };
+        var user = User.Create(
+            command.Username,
+            command.Email,
+            passwordHash);
 
-        var profile = new Profile
-        {
-            Id = userId
-        };
 
         await _userRepository.AddAsync(
             user,
             cancellationToken);
 
         await _profileRepository.AddAsync(
-            profile,
+            user.Profile,
             cancellationToken);
 
-        await _userRepository.SaveChangesAsync(
+        await _unitOfWork.SaveChangesAsync(
             cancellationToken);
 
-        return userId;
+        return user.Id;
     }
 }

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { styles } from './styles/SettingsSection.styles.ts';
 import CardPreview from '../CardPreview.tsx';
+import { CardStyle, getSavedCardStyle } from '../flashcardTheme.ts';
 
 interface SettingsSectionProps {
   ankiConnected: boolean | null;
   checkingAnki: boolean;
   checkAnkiStatus: (showNotification?: boolean) => Promise<void>;
   saveApiKey: (apiKey: string) => Promise<void>;
+  onCardStyleChange: (style: CardStyle) => void;
   fullWidth?: boolean;
 }
 
@@ -15,20 +17,21 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
   checkingAnki,
   checkAnkiStatus,
   saveApiKey,
+  onCardStyleChange,
   fullWidth = false,
 }) => {
   const [settings, setSettings] = useState({
     username: 'Dmitry',
     email: 'dev@example.com',
     avatar: '',
-    synonymsLimit: 10,
-    antonymsLimit: 5,
-    relatedLimit: 10,
-    examplesLimit: 3,
+    synonymsLimit: Number(localStorage.getItem('dictionary.maxSynonyms') ?? 5),
+    antonymsLimit: Number(localStorage.getItem('dictionary.maxAntonyms') ?? 3),
+    relatedLimit: Number(localStorage.getItem('dictionary.maxRelatedWords') ?? 5),
+    examplesLimit: Number(localStorage.getItem('dictionary.maxExamples') ?? 2),
     deckName: 'Merriam Vocabulary',
     modelName: 'MerriamWebsterBasic',
-    cardStyle: 'Cyberpunk', // ← теперь Cyberpunk по умолчанию
-    theme: 'Light',
+    cardStyle: getSavedCardStyle() as CardStyle,
+    theme: 'Dark',
     apiKey: '',
   });
 
@@ -40,7 +43,10 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
   };
 
   const handleSave = () => {
-    console.log('Settings saved:', settings);
+    localStorage.setItem('dictionary.maxSynonyms', String(settings.synonymsLimit));
+    localStorage.setItem('dictionary.maxAntonyms', String(settings.antonymsLimit));
+    localStorage.setItem('dictionary.maxRelatedWords', String(settings.relatedLimit));
+    localStorage.setItem('dictionary.maxExamples', String(settings.examplesLimit));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
@@ -195,7 +201,12 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
           <span style={styles.label}>Card style</span>
           <select
             value={settings.cardStyle}
-            onChange={(e) => handleChange('cardStyle', e.target.value)}
+            onChange={(e) => {
+              const style = e.target.value as CardStyle;
+              handleChange('cardStyle', style);
+              localStorage.setItem('cardStyle', style);
+              onCardStyleChange(style);
+            }}
             style={styles.select}
           >
             <option value="Cyberpunk">Cyberpunk</option>

@@ -2,8 +2,9 @@
 
 export const styles = {
   registrationPanel: {
-    width: '90%',
-    margin: '0 auto',
+    width: '100%',
+    margin: 0,
+    boxSizing: 'border-box' as const,
     padding: '2rem',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
@@ -55,6 +56,10 @@ export const styles = {
       borderColor: 'var(--primary)',
       boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
     },
+    '&:disabled': {
+      opacity: 0.6,
+      cursor: 'not-allowed',
+    },
   },
 
   registerButton: {
@@ -93,4 +98,5 @@ export const styles = {
       textDecoration: 'underline',
     },
   },
+
 };

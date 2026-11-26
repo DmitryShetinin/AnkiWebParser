@@ -2,11 +2,11 @@ import React, { useState } from 'react';
  
 import NotificationItem from '../NotificationItem.tsx';
 import { Notification } from '../types';
+import { DictionaryCard } from '../../words/types.ts';
 import { 
   styles, 
   getSearchButtonStyle, 
-  getStatusBadgeStyle, 
-  getColorBoxStyle 
+  getStatusBadgeStyle
 } from './styles/ProgramSection.styles.ts'; 
 
 interface ProgramSectionProps { 
@@ -17,6 +17,7 @@ interface ProgramSectionProps {
   addNotification: (notification: Omit<Notification, 'id' | 'time'>) => void;
   clearNotifications: () => void;
   api: any;
+  onAddCards: (cards: DictionaryCard[]) => Promise<number>;
 }
 
 const ProgramSection: React.FC<ProgramSectionProps> = ({
@@ -26,82 +27,46 @@ const ProgramSection: React.FC<ProgramSectionProps> = ({
   checkAnkiStatus,
   addNotification,
   clearNotifications,
-  api
+  api,
+  onAddCards,
 }) => {
   const [word, setWord] = useState('');
   const [loading, setLoading] = useState(false);
   
    
-const searchWord = async () => {
+  const searchWord = async () => {
   if (!word.trim()) return;
   const searchTerm = word.trim();
   setLoading(true);
   try {
-    const alreadyThere = await wordExistsInAnki(searchTerm);
-    if (alreadyThere) {
-      addNotification({
+    const response = await api.post<DictionaryCard[]>('/api/words', null, {
+      params: {
         word: searchTerm,
-        type: 'info',
-        message: `ℹ️ Слово "${searchTerm}" уже есть в Anki, повторно не добавляем`
-      });
-      setWord('');
-      setLoading(false);
-      return;
-    }
+        maxSynonyms: Number(localStorage.getItem('dictionary.maxSynonyms') ?? 5),
+        maxAntonyms: Number(localStorage.getItem('dictionary.maxAntonyms') ?? 3),
+        maxRelatedWords: Number(localStorage.getItem('dictionary.maxRelatedWords') ?? 5),
+        maxExamples: Number(localStorage.getItem('dictionary.maxExamples') ?? 2),
+      },
+    });
+    const cards = response.data;
 
-
-    // Step 1: Parse word via backend
-    const response = await api.post(`/api/cards?word=${encodeURIComponent(searchTerm)}`);
-    const data = response.data;
-    
-    
-    if (!data.success || !data.cards || data.cards.length === 0) {
+    if (cards.length === 0) {
       addNotification({
         word: searchTerm,
         type: 'error',
-        message: data.message || `❌ Слово "${searchTerm}" не найдено или не удалось распарсить`
+        message: `❌ Слово "${searchTerm}" не найдено или не удалось распарсить`,
       });
       setWord('');
       return;
     }
-    
-    // Step 2: Send each card to AnkiConnect
-    let importedCount = 0;
-    const errors = [];
-
- 
-    for (const card of data.cards) {
-      const ankiResult = await addNoteToAnki(card);
-      if (ankiResult.error) {
-        errors.push(`${card.word} (${card.partOfSpeech}): ${ankiResult.error}`);
-      } else {
-        importedCount++;
-      }
-    }
-    
-    // Step 3: Show result notification
-    if (importedCount === data.cards.length) {
-      addNotification({
-        word: searchTerm,
-        type: 'success',
-        message: `✅ Слово "${searchTerm}" полностью добавлено в Anki (${importedCount} карточек)`
-      });
-    } else if (importedCount > 0) {
-      addNotification({
-        word: searchTerm,
-        type: 'warning',
-        message: `⚠️ Слово "${searchTerm}" добавлено частично: ${importedCount} из ${data.cards.length} карточек`,
-        details: errors
-      });
-    } else {
-      addNotification({
-        word: searchTerm,
-        type: 'error',
-        message: `❌ Не удалось добавить карточки для "${searchTerm}" в Anki`,
-        details: errors
-      });
-    }
-    
+    const addedCount = await onAddCards(cards);
+    addNotification({
+      word: searchTerm,
+      type: 'success',
+      message: addedCount > 0
+        ? `✅ В коллекцию добавлено карточек: ${addedCount}.`
+        : 'ℹ️ Эти карточки уже есть в коллекции.',
+    });
     setWord('');
   } catch (error) {
     // Error handling as before
@@ -131,65 +96,6 @@ const searchWord = async () => {
     setLoading(false);
   }
 };
-// Проверка, есть ли слово в Anki
-async function wordExistsInAnki(word: string): Promise<boolean> {
-  const payload = {
-    action: 'findNotes',
-    version: 6,
-    params: {
-      query: `deck:MyDeck Word:${word}`
-    }
-  };
-  
-  try {
-    const response = await fetch('http://localhost:8765', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await response.json();
-    return data.result && data.result.length > 0;
-  } catch (err) {
-    console.error('Error checking word existence:', err);
-    return false; // если ошибка, пробуем добавить
-  }
-}
-
-// Добавление одной карточки (с уникальным CardIndex, но это уже не критично)
-async function addNoteToAnki(card) {
-  const payload = {
-    action: 'addNote',
-    version: 6,
-    params: {
-      note: {
-        deckName: 'MyDeck',
-        modelName: 'record type for MyDeckNew',
-        fields: {
-   
-          Word: card.word,
-          Meaning: card.definitions?.[0] || '',
-          Example: card.examples?.[0] || '',
-          Synonyms: (card.synonyms || []).join(', '),
-          Antonyms: (card.antonyms || []).join(', '),
-          PartOfSpeech: card.partOfSpeech || ''
-        },
-        tags: 'vocab-bot',
-        options: {
-          allowDuplicate: false,
-          duplicateScope: 'deck'
-        }
-      }
-    }
-  };
-
-  const response = await fetch('http://localhost:8765', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  return response.json();
-}
-
 
   return (
     <div style={styles.container}>
@@ -198,7 +104,7 @@ async function addNoteToAnki(card) {
         <h1 style={styles.title}>
           🎴 Vocabulary Bot
         </h1>
-        <p style={styles.subtitle}>Найди слово → Автоматически добавь в Anki</p>
+        <p style={styles.subtitle}>Найди слово → Добавь в свою коллекцию</p>
         
         {/* Статус Anki */}
         <div style={styles.statusContainer}>
@@ -241,12 +147,12 @@ async function addNoteToAnki(card) {
             {loading ? (
               <>
                 <span style={{ marginRight: '0.5rem' }}>⏳</span>
-                Добавляем...
+                Ищем...
               </>
             ) : (
               <>
                 <span style={{ marginRight: '0.5rem' }}>🔍</span>
-                Найти и добавить
+                Найти слово
               </>
             )}
           </button>
@@ -254,7 +160,7 @@ async function addNoteToAnki(card) {
         
         {/* Подсказка */}
         <div style={styles.hint}>
-          💡 Введите слово на английском → Нажмите Enter → Слово автоматически добавится в Anki
+          💡 Найдите слово — карточки сразу попадут в вашу коллекцию
         </div>
       </div>
 

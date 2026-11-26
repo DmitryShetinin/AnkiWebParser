@@ -1,7 +1,8 @@
 export const styles = {
   aboutPanel: {
-    width: '90%',
-    margin: '0 auto',
+    width: '100%',
+    margin: 0,
+    boxSizing: 'border-box',
     padding: '2rem',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',

@@ -23,11 +23,8 @@ public sealed class UpdateProfileHandler
 
     if (profile is null)
     {
-        profile = new Profile
-        {
-            Id = profileId
-        };
-
+        profile = Profile.Create(profileId);
+      
         ApplySettings(profile, command);
 
         await _repository.AddAsync(
@@ -50,18 +47,14 @@ public sealed class UpdateProfileHandler
     Profile profile,
     UpdateProfileCommand command)
     {
-        profile.Account.Username = command.Username;
-        profile.Account.Email = command.Email;
+       
         profile.Account.Avatar = command.Avatar;
 
         profile.Dictionary.MaxSynonyms = command.MaxSynonyms;
         profile.Dictionary.MaxAntonyms = command.MaxAntonyms;
         profile.Dictionary.MaxRelatedWords = command.MaxRelatedWords;
         profile.Dictionary.MaxExamples = command.MaxExamples;
-
-        profile.Anki.DeckName = command.DeckName;
-        profile.Anki.ModelName = command.ModelName;
-        profile.Anki.AutoCreateDeck = command.AutoCreateDeck;
+ 
 
         profile.Appearance.CardStyle = command.CardStyle;
         profile.Appearance.Theme = command.Theme;

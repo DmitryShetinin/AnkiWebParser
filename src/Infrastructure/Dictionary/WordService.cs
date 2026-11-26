@@ -7,15 +7,15 @@ using Core.Models;
 public sealed class WordService(
     IMerriamDictionaryClient dictionaryClient,
     IDictionaryParser dictionaryParser,
-    IAnkiCardImporter ankiCardImporter,
     IMemoryCache cache) : IWordService
 {
     public async Task<IReadOnlyList<Card>> GetCardsAsync(
         string word,
+        DictionarySettings settings,
         CancellationToken cancellationToken)
     {
         var normalizedWord = word.Trim().ToLowerInvariant();
-        var cacheKey = $"dictionary:int_thes:{normalizedWord}";
+        var cacheKey = $"dictionary:int_thes:{normalizedWord}:{settings.MaxSynonyms}:{settings.MaxAntonyms}:{settings.MaxRelatedWords}:{settings.MaxExamples}";
 
         if (!cache.TryGetValue(cacheKey, out WordEntry? wordEntry))
         {
@@ -23,7 +23,7 @@ public sealed class WordService(
                 normalizedWord,
                 cancellationToken);
 
-            wordEntry = dictionaryParser.Parse(response);
+            wordEntry = dictionaryParser.Parse(response, settings);
 
             cache.Set(
                 cacheKey,
@@ -32,10 +32,6 @@ public sealed class WordService(
         }
 
         var cards = wordEntry.ToCards();
-
-        await ankiCardImporter.ImportAsync(
-            cards,
-            cancellationToken);
 
         return cards;
     }
