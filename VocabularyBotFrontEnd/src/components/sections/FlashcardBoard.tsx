@@ -1,6 +1,7 @@
 // src/components/FlashcardBoard.tsx
 import React, { useState, useEffect } from 'react';
 import { styles } from '../../components/sections/styles/FlashcardBoard.styles.ts';
+import { CardStyle, getFlashcardTheme } from '../flashcardTheme.ts';
 
 export interface Flashcard {
   id: string;
@@ -17,15 +18,41 @@ export interface Flashcard {
 
 interface FlashcardBoardProps {
   cards: Flashcard[];
+  cardStyle: CardStyle;
   onCardReviewed?: (cardId: string, rating: 'again' | 'bad' | 'good') => void;
 }
 
-const FlashcardBoard: React.FC<FlashcardBoardProps> = ({ cards, onCardReviewed }) => {
+const FlashcardBoard: React.FC<FlashcardBoardProps> = ({ cards, cardStyle, onCardReviewed }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   const currentCard = cards[currentIndex];
+  const theme = getFlashcardTheme(cardStyle);
+  const themeVariables = {
+    '--card-background': theme.background,
+    '--card-text': theme.textColor,
+    '--card-meaning': theme.meaningColor,
+    '--card-accent': theme.accentColor,
+    '--card-secondary': theme.secondaryAccent,
+    '--card-border': theme.border,
+    '--card-shadow': theme.boxShadow,
+    '--card-radius': theme.borderRadius,
+    '--card-decor-top': theme.decorTop,
+    '--card-decor-bottom': theme.decorBottom,
+    '--card-badge-background': theme.badgeBg,
+    '--card-badge-border': theme.badgeBorder,
+    '--card-badge-color': theme.badgeColor,
+    '--card-syn-background': theme.chipSynBg,
+    '--card-syn-border': theme.chipSynBorder,
+    '--card-syn-color': theme.chipSynColor,
+    '--card-ant-background': theme.chipAntBg,
+    '--card-ant-border': theme.chipAntBorder,
+    '--card-ant-color': theme.chipAntColor,
+    '--card-rel-background': theme.chipRelBg,
+    '--card-rel-border': theme.chipRelBorder,
+    '--card-rel-color': theme.chipRelColor,
+  } as React.CSSProperties;
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -65,7 +92,7 @@ const FlashcardBoard: React.FC<FlashcardBoardProps> = ({ cards, onCardReviewed }
 
   if (isCompleted) {
     return (
-      <div style={styles.completedContainer}>
+      <div style={{ ...styles.completedContainer, ...themeVariables }}>
         <div style={styles.completedIcon}>🎉</div>
         <h2 style={styles.completedTitle}>Поздравляю!</h2>
         <p style={styles.completedText}>Все карточки пройдены. Отличная работа!</p>
@@ -80,7 +107,7 @@ const FlashcardBoard: React.FC<FlashcardBoardProps> = ({ cards, onCardReviewed }
   const progress = ((currentIndex + (isFlipped ? 0.5 : 0)) / cards.length) * 100;
 
   return (
-    <div style={styles.container}>
+    <div style={{ ...styles.container, ...themeVariables }}>
       {/* Прогресс */}
       <div style={styles.progressContainer}>
         <div style={styles.progressHeader}>

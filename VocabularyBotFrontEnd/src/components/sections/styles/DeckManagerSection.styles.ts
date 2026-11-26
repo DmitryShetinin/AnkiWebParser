@@ -3,9 +3,10 @@ import { CSSProperties } from 'react';
 export const styles: { [key: string]: CSSProperties } = {
   container: {
     display: 'flex',
-    width: '90%',
-    height: '100vh',               // фиксированная высота для корректного flex-поведения
-    margin: '0 auto',
+    zoom: 0.8,
+    width: '100%',
+    height: '106.25vh',            // после масштаба 80% блок занимает 85% высоты окна
+    margin: 0,
     padding: '2rem',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',

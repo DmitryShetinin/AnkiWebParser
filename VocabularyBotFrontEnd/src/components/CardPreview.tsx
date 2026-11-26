@@ -1,108 +1,16 @@
 // src/components/CardPreview.tsx
 import React, { useState } from 'react';
+import { CardStyle, getFlashcardTheme } from './flashcardTheme.ts';
 
 interface CardPreviewProps {
-  variant: 'Cyberpunk' | 'Tokyo' | 'Coffee';
+  variant: CardStyle;
 }
 
 const CardPreview: React.FC<CardPreviewProps> = ({ variant }) => {
   const [flipped, setFlipped] = useState(false);
   const toggleFlip = () => setFlipped(!flipped);
 
-  const isFlashcardStyle = variant === 'Cyberpunk';
-
-  const getStyles = () => {
-    switch (variant) {
-      case 'Cyberpunk':
-        return {
-          background: 'linear-gradient(135deg, #253039 0%, #1a2329 100%)',
-          color: '#e6edf3',
-          border: '1px solid #3a4a54',
-          boxShadow:
-            '0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)',
-          fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
-          accentColor: '#a78bfa',
-          secondaryAccent: '#9aabb8',
-          textColor: '#e6edf3',
-          meaningColor: '#bcc9d4',
-          borderRadius: '28px',
-          chipSynBg: 'rgba(16, 185, 129, 0.15)',
-          chipSynColor: '#6ee7b7',
-          chipSynBorder: '1px solid rgba(16, 185, 129, 0.3)',
-          chipAntBg: 'rgba(239, 68, 68, 0.15)',
-          chipAntColor: '#fca5a5',
-          chipAntBorder: '1px solid rgba(239, 68, 68, 0.3)',
-          chipRelBg: 'rgba(59, 130, 246, 0.15)',
-          chipRelColor: '#93c5fd',
-          chipRelBorder: '1px solid rgba(59, 130, 246, 0.3)',
-          badgeBg: 'rgba(124, 58, 237, 0.18)',
-          badgeBorder: '1px solid rgba(167, 139, 250, 0.3)',
-          badgeColor: '#c4b5fd',
-          decorTop: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)',
-          decorBottom: 'linear-gradient(135deg, #a78bfa 0%, #ec4899 100%)',
-          exampleBg: 'rgba(167, 139, 250, 0.08)',
-        };
-      case 'Tokyo':
-        return {
-          background: 'linear-gradient(135deg, #143233 0%, #0a1e1f 100%)',
-          color: '#d7f5f0',
-          border: '1px solid #1e4a4a',
-          boxShadow: '0 20px 40px -12px rgba(0,0,0,0.55)',
-          fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
-          accentColor: '#5eead4',
-          secondaryAccent: '#7ba8a4',
-          textColor: '#d7f5f0',
-          meaningColor: '#a7f3d0',
-          borderRadius: '20px',
-          chipSynBg: 'rgba(16, 185, 129, 0.15)',
-          chipSynColor: '#6ee7b7',
-          chipSynBorder: '1px solid rgba(16, 185, 129, 0.3)',
-          chipAntBg: 'rgba(239, 68, 68, 0.15)',
-          chipAntColor: '#fca5a5',
-          chipAntBorder: '1px solid rgba(239, 68, 68, 0.3)',
-          chipRelBg: 'rgba(59, 130, 246, 0.15)',
-          chipRelColor: '#93c5fd',
-          chipRelBorder: '1px solid rgba(59, 130, 246, 0.3)',
-          badgeBg: 'rgba(20, 184, 166, 0.18)',
-          badgeBorder: '1px solid rgba(94, 234, 212, 0.3)',
-          badgeColor: '#a7f3d0',
-          decorTop: 'linear-gradient(135deg, #0d9488 0%, #5eead4 100%)',
-          decorBottom: 'linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%)',
-          exampleBg: 'rgba(94, 234, 212, 0.08)',
-        };
-      case 'Coffee':
-      default:
-        return {
-          background: 'linear-gradient(135deg, #fffaf3 0%, #fdf2e9 100%)',
-          color: '#3d2e23',
-          border: '1px solid #f0e2d3',
-          boxShadow: '0 20px 40px -12px rgba(180,130,90,0.18)',
-          fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
-          accentColor: '#c4715a',
-          secondaryAccent: '#a68a78',
-          textColor: '#3d2e23',
-          meaningColor: '#5a4a3d',
-          borderRadius: '20px',
-          chipSynBg: 'rgba(16, 185, 129, 0.12)',
-          chipSynColor: '#047857',
-          chipSynBorder: '1px solid rgba(16, 185, 129, 0.25)',
-          chipAntBg: 'rgba(239, 68, 68, 0.12)',
-          chipAntColor: '#991b1b',
-          chipAntBorder: '1px solid rgba(239, 68, 68, 0.25)',
-          chipRelBg: 'rgba(59, 130, 246, 0.12)',
-          chipRelColor: '#1e40af',
-          chipRelBorder: '1px solid rgba(59, 130, 246, 0.25)',
-          badgeBg: 'rgba(196, 113, 90, 0.15)',
-          badgeBorder: '1px solid rgba(196, 113, 90, 0.3)',
-          badgeColor: '#8b5a48',
-          decorTop: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
-          decorBottom: 'linear-gradient(135deg, #ec4899 0%, #f97316 100%)',
-          exampleBg: 'rgba(196, 113, 90, 0.08)',
-        };
-    }
-  };
-
-  const style = getStyles();
+  const style = getFlashcardTheme(variant);
 
   const labelStyle: React.CSSProperties = {
     display: 'flex',
@@ -196,7 +104,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ variant }) => {
     boxSizing: 'border-box',
     background: style.background,
     color: style.textColor,
-    fontFamily: style.fontFamily,
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
     border: style.border,
   };
 
@@ -229,7 +137,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ variant }) => {
             padding: '2rem 1.6rem',
             borderRadius: style.borderRadius,
             fontSize: '0.95rem',
-            fontFamily: style.fontFamily,
+            fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
             boxSizing: 'border-box',
           }}
         >

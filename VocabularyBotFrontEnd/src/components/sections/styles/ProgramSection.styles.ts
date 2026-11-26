@@ -2,8 +2,9 @@
 
 export const styles = {
   container: {
-    width: '90%',
+    width: '100%',
     padding: '2rem',
+    boxSizing: 'border-box' as const,
     borderRadius: '20px',
   },
   header: {
@@ -21,7 +22,8 @@ export const styles = {
     marginBottom: '1rem',
   },
   searchPanel: {
-    width: '95%',
+    width: '100%',
+    boxSizing: 'border-box' as const,
     backgroundColor: 'var(--surface)',
     borderRadius: '16px',
     boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03), 0 1px 4px rgba(0, 0, 0, 0.02)',

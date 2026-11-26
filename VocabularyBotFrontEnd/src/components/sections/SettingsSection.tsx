@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { styles } from './styles/SettingsSection.styles.ts';
 import CardPreview from '../CardPreview.tsx';
+import { CardStyle, getSavedCardStyle } from '../flashcardTheme.ts';
 
 interface SettingsSectionProps {
   ankiConnected: boolean | null;
   checkingAnki: boolean;
   checkAnkiStatus: (showNotification?: boolean) => Promise<void>;
   saveApiKey: (apiKey: string) => Promise<void>;
+  onCardStyleChange: (style: CardStyle) => void;
   fullWidth?: boolean;
 }
 
@@ -15,6 +17,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
   checkingAnki,
   checkAnkiStatus,
   saveApiKey,
+  onCardStyleChange,
   fullWidth = false,
 }) => {
   const [settings, setSettings] = useState({
@@ -27,7 +30,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
     examplesLimit: Number(localStorage.getItem('dictionary.maxExamples') ?? 2),
     deckName: 'Merriam Vocabulary',
     modelName: 'MerriamWebsterBasic',
-    cardStyle: 'Cyberpunk', // ← теперь Cyberpunk по умолчанию
+    cardStyle: getSavedCardStyle() as CardStyle,
     theme: 'Dark',
     apiKey: '',
   });
@@ -198,7 +201,12 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
           <span style={styles.label}>Card style</span>
           <select
             value={settings.cardStyle}
-            onChange={(e) => handleChange('cardStyle', e.target.value)}
+            onChange={(e) => {
+              const style = e.target.value as CardStyle;
+              handleChange('cardStyle', style);
+              localStorage.setItem('cardStyle', style);
+              onCardStyleChange(style);
+            }}
             style={styles.select}
           >
             <option value="Cyberpunk">Cyberpunk</option>

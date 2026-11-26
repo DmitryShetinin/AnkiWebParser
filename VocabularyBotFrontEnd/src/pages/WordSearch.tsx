@@ -15,6 +15,7 @@ import { LocalWordStorage } from '../words/LocalWordStorage.ts';
 import { ApiWordStorage } from '../words/ApiWordStorage.ts';
 import { DictionaryCard, StoredWord } from '../words/types.ts';
 import DeckManagerSection from '../components/sections/DeckManagerSection.tsx';
+import { CardStyle, getSavedCardStyle } from '../components/flashcardTheme.ts';
 
 const wordStorage = new LocalWordStorage();
 const apiWordStorage = new ApiWordStorage();
@@ -50,6 +51,7 @@ function WordSearch() {
   const [checkingAnki, setCheckingAnki] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string>('program');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [cardStyle, setCardStyle] = useState<CardStyle>(getSavedCardStyle);
 
   useEffect(() => {
     const loadCollection = async () => {
@@ -234,7 +236,7 @@ function WordSearch() {
       id: 'flashcards',
       title: 'Карточки',
       emoji: '🃏',
-      component: <FlashcardBoard cards={flashcards} />,
+      component: <FlashcardBoard cards={flashcards} cardStyle={cardStyle} />,
     },
     {
     id: 'decks',
@@ -262,6 +264,7 @@ function WordSearch() {
           checkingAnki={checkingAnki}
           checkAnkiStatus={checkAnkiStatus}
           saveApiKey={saveApiKey}
+          onCardStyleChange={setCardStyle}
         />
       ),
     },
@@ -312,12 +315,23 @@ function WordSearch() {
       overflowY: 'auto',
     },
 
+    flashcardContentArea: {
+      height: '100dvh',
+      minHeight: 0,
+      overflowY: 'hidden',
+    },
+
     contentWrapper: {
       width: '100%',
       maxWidth: 'none',
       margin: '0',
-      padding: '0',
+      paddingLeft: '2rem',
       boxSizing: 'border-box',
+    },
+
+    flashcardContentWrapper: {
+      height: 'calc(100dvh - 4rem)',
+      minHeight: 0,
     },
 
     toggleButton: {
@@ -367,7 +381,10 @@ function WordSearch() {
         collapsed={sidebarCollapsed}
       />
 
-      <main style={styles.contentArea}>
+      <main style={{
+        ...styles.contentArea,
+        ...(activeMenu === 'flashcards' ? styles.flashcardContentArea : {}),
+      }}>
 
         <button
           onClick={toggleSidebar}
@@ -381,7 +398,10 @@ function WordSearch() {
           {sidebarCollapsed ? '→' : '←'}
         </button>
 
-        <div style={styles.contentWrapper}>
+        <div style={{
+          ...styles.contentWrapper,
+          ...(activeMenu === 'flashcards' ? styles.flashcardContentWrapper : {}),
+        }}>
           {isAuthenticated && guestCardsToImport.length > 0 && (
             <div style={{
               marginBottom: '1rem', padding: '1rem', borderRadius: '0.75rem',
