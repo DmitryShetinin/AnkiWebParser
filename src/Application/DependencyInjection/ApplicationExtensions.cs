@@ -28,6 +28,7 @@ public static class ApplicationExtensions
         services.AddScoped<GetCurrentUserHandler>();
         services.AddScoped<GetCollectionHandler>();
         services.AddScoped<ImportCollectionHandler>();
+        services.AddScoped<GetDecksHandler>();
         services.AddScoped<DictionarySettings>();
 
    

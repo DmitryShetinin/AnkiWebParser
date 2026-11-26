@@ -23,6 +23,29 @@ namespace Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Core.Models.Collection.DeckCard", b =>
+                {
+                    b.Property<Guid>("DeckId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SavedCardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("DeckId", "SavedCardId");
+
+                    b.HasIndex("DeckId", "UserId");
+
+                    b.HasIndex("SavedCardId", "UserId");
+
+                    b.ToTable("DeckCards", (string)null);
+                });
+
             modelBuilder.Entity("Core.Models.Collection.SavedCard", b =>
                 {
                     b.Property<Guid>("Id")
@@ -76,6 +99,37 @@ namespace Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("SavedCards", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Models.Deck", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Decks", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.User.User", b =>
@@ -132,6 +186,49 @@ namespace Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Profiles");
+                });
+
+            modelBuilder.Entity("Core.Models.Collection.DeckCard", b =>
+                {
+                    b.HasOne("Core.Models.Deck", "Deck")
+                        .WithMany("Cards")
+                        .HasForeignKey("DeckId", "UserId")
+                        .HasPrincipalKey("Id", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.Collection.SavedCard", "SavedCard")
+                        .WithMany("DeckMemberships")
+                        .HasForeignKey("SavedCardId", "UserId")
+                        .HasPrincipalKey("Id", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deck");
+
+                    b.Navigation("SavedCard");
+                });
+
+            modelBuilder.Entity("Core.Models.Collection.SavedCard", b =>
+                {
+                    b.HasOne("Core.Models.User.User", "User")
+                        .WithMany("SavedCards")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Core.Models.Deck", b =>
+                {
+                    b.HasOne("Core.Models.User.User", "User")
+                        .WithMany("Decks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Profile", b =>
@@ -217,10 +314,24 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Core.Models.Collection.SavedCard", b =>
+                {
+                    b.Navigation("DeckMemberships");
+                });
+
+            modelBuilder.Entity("Core.Models.Deck", b =>
+                {
+                    b.Navigation("Cards");
+                });
+
             modelBuilder.Entity("Core.Models.User.User", b =>
                 {
+                    b.Navigation("Decks");
+
                     b.Navigation("Profile")
                         .IsRequired();
+
+                    b.Navigation("SavedCards");
                 });
 #pragma warning restore 612, 618
         }

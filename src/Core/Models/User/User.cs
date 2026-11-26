@@ -11,6 +11,8 @@ public sealed class User
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
       public Profile Profile { get; private set; } = null!;
+    public ICollection<Core.Models.Deck> Decks { get; private set; } = new List<Core.Models.Deck>();
+    public ICollection<Core.Models.Collection.SavedCard> SavedCards { get; private set; } = new List<Core.Models.Collection.SavedCard>();
 
     private User()
     {
