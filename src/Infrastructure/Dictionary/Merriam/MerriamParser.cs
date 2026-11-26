@@ -7,13 +7,17 @@ using System.Text.Json;
 public sealed class MerriamParser : IDictionaryParser
 {
     private readonly IMerriamTextFormatter _textFormatter;
-
     public MerriamParser(IMerriamTextFormatter textFormatter)
     {
         _textFormatter = textFormatter;
     }
 
     public WordEntry Parse(IReadOnlyList<MerriamEntryDto> entries)
+    {
+        return Parse(entries, new DictionarySettings());
+    }
+
+    public WordEntry Parse(IReadOnlyList<MerriamEntryDto> entries, DictionarySettings settings)
     {
         if (entries is null || entries.Count == 0)
             throw new ArgumentException(
@@ -23,7 +27,7 @@ public sealed class MerriamParser : IDictionaryParser
         var word = entries[0].Hwi.Hw;
 
         var parsedEntries = entries
-            .Select(ParseEntry)
+            .Select(entry => ParseEntry(entry, settings))
             .ToList();
 
         return new WordEntry
@@ -43,7 +47,7 @@ public sealed class MerriamParser : IDictionaryParser
             : $"{merriamUuid}:{senseNumber}";
     }
 
-    private PartOfSpeechEntry ParseEntry(MerriamEntryDto entry)
+    private PartOfSpeechEntry ParseEntry(MerriamEntryDto entry, DictionarySettings settings)
     {
         return new PartOfSpeechEntry
         {
@@ -56,13 +60,14 @@ public sealed class MerriamParser : IDictionaryParser
             // чтобы каждый Meaning получил свой ExternalId.
             Meanings = ParseMeanings(
                 entry.Def,
-                entry.Meta.Uuid.ToString())
+                entry.Meta.Uuid.ToString(), settings)
         };
     }
 
     private IReadOnlyList<Meaning> ParseMeanings(
         IReadOnlyList<MerriamDefinitionBlockDto> definitions,
-        string merriamUuid)
+        string merriamUuid,
+        DictionarySettings settings)
     {
         var meanings = new List<Meaning>();
 
@@ -73,7 +78,7 @@ public sealed class MerriamParser : IDictionaryParser
                 meanings.Add(
                     ParseMeaning(
                         sense,
-                        merriamUuid));
+                        merriamUuid, settings));
             }
         }
 
@@ -118,7 +123,8 @@ public sealed class MerriamParser : IDictionaryParser
 
     private Meaning ParseMeaning(
         MerriamSenseDto sense,
-        string merriamUuid)
+        string merriamUuid,
+        DictionarySettings settings)
     {
         string? definition = null;
 
@@ -151,13 +157,13 @@ public sealed class MerriamParser : IDictionaryParser
         }
 
         synonyms.AddRange(
-            ParseWords(sense.SynList));
+            ParseWords(sense.SynList).Take(Math.Max(0, settings.MaxSynonyms)));
 
         antonyms.AddRange(
-            ParseWords(sense.AntList));
+            ParseWords(sense.AntList).Take(Math.Max(0, settings.MaxAntonyms)));
 
         relatedWords.AddRange(
-            ParseWords(sense.RelList));
+            ParseWords(sense.RelList).Take(Math.Max(0, settings.MaxRelatedWords)));
 
         return new Meaning
         {
@@ -168,7 +174,7 @@ public sealed class MerriamParser : IDictionaryParser
           sense.SenseNumber),
 
             Definition = definition ?? string.Empty,
-            Examples = examples,
+            Examples = examples.Take(Math.Max(0, settings.MaxExamples)).ToList(),
             Synonyms = synonyms,
             Antonyms = antonyms,
             RelatedWords = relatedWords

@@ -7,6 +7,7 @@
 
 
 using Core.Models.User;
+using Core.Models.Collection;
 using Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ public class AppDbContext : DbContext
 
 
   public DbSet<Profile> Profiles => Set<Profile>();
+  public DbSet<SavedCard> SavedCards => Set<SavedCard>();
  
 public DbSet<User> Users => Set<User>();
 
@@ -27,6 +29,7 @@ public DbSet<User> Users => Set<User>();
 
     modelBuilder.ApplyConfiguration(new ProfileConfiguration());
     modelBuilder.ApplyConfiguration(new UserConfiguration());
+    modelBuilder.ApplyConfiguration(new SavedCardConfiguration());
     
 
 

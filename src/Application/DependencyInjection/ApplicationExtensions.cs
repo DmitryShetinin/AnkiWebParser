@@ -5,6 +5,7 @@ using Application.Features.Auth.Login;
 using Application.Features.Auth.Me;
 using Application.Features.Auth.Register;
 using Application.Features.SettingsUser.GetProfile;
+using Application.Features.Collection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +26,9 @@ public static class ApplicationExtensions
         services.AddScoped<LoginHandler>();
 
         services.AddScoped<GetCurrentUserHandler>();
+        services.AddScoped<GetCollectionHandler>();
+        services.AddScoped<ImportCollectionHandler>();
+        services.AddScoped<DictionarySettings>();
 
    
 

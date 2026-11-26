@@ -48,14 +48,13 @@ public sealed class RegisterHandler
             command.Email,
             passwordHash);
 
-        var profile = Profile.Create(user.Id);
 
         await _userRepository.AddAsync(
             user,
             cancellationToken);
 
         await _profileRepository.AddAsync(
-            profile,
+            user.Profile,
             cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(

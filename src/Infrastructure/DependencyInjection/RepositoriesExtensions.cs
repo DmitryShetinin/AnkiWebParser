@@ -13,6 +13,7 @@ public static class RepositoriesExtensions
   {
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<IProfileRepository, ProfileRepository>();
+    services.AddScoped<ISavedCardRepository, SavedCardRepository>();
 
 
     return services;

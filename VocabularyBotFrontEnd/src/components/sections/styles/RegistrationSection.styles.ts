@@ -55,6 +55,10 @@ export const styles = {
       borderColor: 'var(--primary)',
       boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)',
     },
+    '&:disabled': {
+      opacity: 0.6,
+      cursor: 'not-allowed',
+    },
   },
 
   registerButton: {
@@ -93,4 +97,5 @@ export const styles = {
       textDecoration: 'underline',
     },
   },
+
 };

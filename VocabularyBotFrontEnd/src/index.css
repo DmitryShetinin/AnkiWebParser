@@ -12,20 +12,18 @@ code {
     monospace;
 }
 
-
-
 :root {
-  --bg: #f3f4f6;
-  --surface: #ffffff;
-  --text: #1f2937;
-  --text-secondary: #6b7280;
-  --border: #e5e7eb;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --info: #3b82f6;
+  --bg: #d9c4a8;              /* тёмный карамельный фон */
+  --surface: #e8d5bc;         /* вспененное молоко с корицей */
+  --text: #3a2416;            /* эспрессо, почти чёрный кофе */
+  --text-secondary: #6b4a30;  /* мокко */
+  --border: #c4a583;          /* обжаренное зерно */
+  --primary: #8a4f2a;         /* тёмный обжаренный кофе */
+  --primary-hover: #6b3a1e;
+  --success: #6b7f4a;         /* оливковый с кофе */
+  --danger: #a04f3d;          /* обожжённая терракота */
+  --warning: #b8802f;         /* карамельный сироп */
+  --info: #8a4f2a;
 }
 
 [data-theme="dark"] {
@@ -43,10 +41,11 @@ code {
 }
 
 :root {
-  --input-border: rgba(0, 0, 0, 0.2);
+  --input-border: rgba(58, 36, 22, 0.25);
+  --input-bg: #e0cbae;
 }
 
 [data-theme="dark"] {
   --input-border: rgba(255, 255, 255, 0.25);
+  --input-bg: #1e293b;
 }
-
