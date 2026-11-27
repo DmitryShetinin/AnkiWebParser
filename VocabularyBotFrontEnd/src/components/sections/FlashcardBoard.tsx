@@ -123,14 +123,9 @@ const FlashcardBoard: React.FC<FlashcardBoardProps> = ({ cards, cardStyle, onCar
 
       {/* Карточка */}
       <div style={styles.cardWrapper} onClick={handleFlip}>
-        <div
-          style={{
-            ...styles.cardInner,
-            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-          }}
-        >
+        <div style={styles.cardInner}>
           {/* ЛИЦЕВАЯ СТОРОНА */}
-          <div style={styles.cardFront}>
+          <div style={{ ...styles.cardFront, display: isFlipped ? 'none' : 'flex' }}>
             <div style={styles.frontDecorTop} />
             <div style={styles.frontDecorBottom} />
             <div style={styles.frontContent}>
@@ -152,7 +147,7 @@ const FlashcardBoard: React.FC<FlashcardBoardProps> = ({ cards, cardStyle, onCar
           </div>
 
           {/* ОБРАТНАЯ СТОРОНА */}
-          <div style={styles.cardBack}>
+          <div style={{ ...styles.cardBack, display: isFlipped ? 'flex' : 'none' }}>
             <div style={styles.backHeader}>
               <div style={styles.backWord}>{currentCard.front}</div>
               {back.partOfSpeech && (

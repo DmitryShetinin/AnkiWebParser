@@ -68,23 +68,18 @@ export const styles: Record<string, CSSProperties> = {
     flex: 1,
     minHeight: 0,
     height: 'auto',
-    perspective: '1400px',
     cursor: 'pointer',
   },
   cardInner: {
     position: 'relative',
     width: '100%',
     height: '100%',
-    transformStyle: 'preserve-3d',
-    transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
   },
 
   // ===== ЛИЦЕВАЯ СТОРОНА =====
   cardFront: {
     position: 'absolute',
     inset: 0,
-    backfaceVisibility: 'hidden',
-    WebkitBackfaceVisibility: 'hidden',
     borderRadius: 'var(--card-radius)',
     background: 'var(--card-background)',
     boxShadow: 'var(--card-shadow)',
@@ -172,9 +167,6 @@ export const styles: Record<string, CSSProperties> = {
   cardBack: {
     position: 'absolute',
     inset: 0,
-    backfaceVisibility: 'hidden',
-    WebkitBackfaceVisibility: 'hidden',
-    transform: 'rotateY(180deg)',
     borderRadius: 'var(--card-radius)',
     background: 'var(--card-background)',
     boxShadow: 'var(--card-shadow)',

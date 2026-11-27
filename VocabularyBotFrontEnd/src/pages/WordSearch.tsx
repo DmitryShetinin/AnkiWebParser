@@ -324,6 +324,12 @@ function WordSearch() {
       overflowY: 'hidden',
     },
 
+    decksContentArea: {
+      height: '100dvh',
+      minHeight: 0,
+      overflowY: 'hidden',
+    },
+
     contentWrapper: {
       width: '100%',
       maxWidth: 'none',
@@ -333,6 +339,11 @@ function WordSearch() {
     },
 
     flashcardContentWrapper: {
+      height: 'calc(100dvh - 4rem)',
+      minHeight: 0,
+    },
+
+    decksContentWrapper: {
       height: 'calc(100dvh - 4rem)',
       minHeight: 0,
     },
@@ -387,6 +398,7 @@ function WordSearch() {
       <main style={{
         ...styles.contentArea,
         ...(activeMenu === 'flashcards' ? styles.flashcardContentArea : {}),
+        ...(activeMenu === 'decks' ? styles.decksContentArea : {}),
       }}>
 
         <button
@@ -404,6 +416,7 @@ function WordSearch() {
         <div style={{
           ...styles.contentWrapper,
           ...(activeMenu === 'flashcards' ? styles.flashcardContentWrapper : {}),
+          ...(activeMenu === 'decks' ? styles.decksContentWrapper : {}),
         }}>
           {isAuthenticated && guestCardsToImport.length > 0 && (
             <div style={{

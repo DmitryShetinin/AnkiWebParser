@@ -3,11 +3,11 @@ import { CSSProperties } from 'react';
 export const styles: { [key: string]: CSSProperties } = {
   container: {
     display: 'flex',
-    zoom: 0.8,
     width: '100%',
-    height: '106.25vh',            // после масштаба 80% блок занимает 85% высоты окна
+    height: '100%',
+    minHeight: 0,
     margin: 0,
-    padding: '2rem',
+    boxSizing: 'border-box',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
     borderRadius: '20px',
@@ -17,8 +17,9 @@ export const styles: { [key: string]: CSSProperties } = {
     overflow: 'hidden',            // предотвращает двойную прокрутку
   },
   sidebar: {
-    width: '280px',
-    minWidth: '280px',
+    width: 'min(280px, 32%)',
+    minWidth: '220px',
+    flexShrink: 0,
     backgroundColor: 'var(--surface)',
     borderRight: '1px solid var(--border)',
     display: 'flex',
@@ -93,9 +94,11 @@ export const styles: { [key: string]: CSSProperties } = {
   },
   main: {
     flex: 1,
+    minWidth: 0,
+    minHeight: 0,
     display: 'flex',               // делаем main flex-контейнером
     flexDirection: 'column',
-    padding: '2rem',
+    padding: 'clamp(1rem, 2vw, 2rem)',
     overflow: 'hidden',            // прокрутку переносим внутрь
     backgroundColor: 'var(--bg)',
     transition: 'background 0.2s ease',
@@ -121,6 +124,8 @@ export const styles: { [key: string]: CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,                      // занимает всю высоту main
+    minWidth: 0,
+    minHeight: 0,
     width: '100%',
     maxWidth: '1000px',
     margin: '0 auto',
@@ -195,6 +200,8 @@ export const styles: { [key: string]: CSSProperties } = {
   // Новый обёрточный блок для списка карточек (с прокруткой)
   cardsWrapper: {
     flex: 1,                      // растягивается на всё свободное место
+    minHeight: 0,
+    minWidth: 0,
     overflowY: 'auto',            // прокрутка, если карточек много
     width: '100%',
   },
